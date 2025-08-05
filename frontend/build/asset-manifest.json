@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.effe3719.css",
+    "main.js": "/static/js/main.072bedc1.js",
+    "static/js/453.8ab44547.chunk.js": "/static/js/453.8ab44547.chunk.js",
+    "static/media/adminimg.gif": "/static/media/adminimg.548e0f46e30b2a8f7ae6.gif",
+    "static/media/stdimg.gif": "/static/media/stdimg.068876c303447bdab6a3.gif",
+    "static/media/selectionimg.gif": "/static/media/selectionimg.8daedc3689b4e9a41cd0.gif",
+    "static/media/facultyimg.gif": "/static/media/facultyimg.e1cef929a4ce714a386f.gif",
+    "static/media/signupimg.gif": "/static/media/signupimg.e7257dc1169797780479.gif",
+    "static/media/dashimg.png": "/static/media/dashimg.97756ab148693c0974b8.png",
+    "static/media/stdlogo.png": "/static/media/stdlogo.5310d765b71141f4cb31.png",
+    "static/media/landing.png": "/static/media/landing.23a8193683aab8e71a31.png",
+    "static/media/familylogo.png": "/static/media/familylogo.a876d8ced9956b5186d7.png",
+    "static/media/teacherlogo.png": "/static/media/teacherlogo.e8b253f90d28cac1ffb7.png",
+    "index.html": "/index.html",
+    "main.effe3719.css.map": "/static/css/main.effe3719.css.map",
+    "main.072bedc1.js.map": "/static/js/main.072bedc1.js.map",
+    "453.8ab44547.chunk.js.map": "/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.effe3719.css",
+    "static/js/main.072bedc1.js"
+  ]
+}

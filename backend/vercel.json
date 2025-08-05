@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+      }
+    }
+  ],
+  "env": {
+    "MONGO_URI": "mongodb+srv://ujjwalkumar434345:1BKHvffaXPnwGaoY@cluster0.cocxlky.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "ADMIN_EMAIL": "ujjwal@gmail.com",
+    "ADMIN_PASSWORD": "ujjwal123",
+    "ADMIN_NAME": "Ujjwal Singh"
+  }
+}
