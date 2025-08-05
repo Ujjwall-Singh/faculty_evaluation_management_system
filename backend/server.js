@@ -70,7 +70,7 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     const allowedOrigins = [
-      'https://fems-live.vercel.app',
+      'https://faculty-evaluation-management-syste-three.vercel.app',
       'http://localhost:3000',
       'https://localhost:3000',
       'http://127.0.0.1:3000'
@@ -95,6 +95,7 @@ app.use(morgan('dev')); // Log requests
 app.options('*', cors({
   origin: function (origin, callback) {
     const allowedOrigins = [
+      'https://faculty-evaluation-management-syste-three.vercel.app',
       'https://fems-live.vercel.app',
       'http://localhost:3000',
       'https://localhost:3000',
