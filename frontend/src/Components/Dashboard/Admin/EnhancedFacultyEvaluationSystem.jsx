@@ -15,7 +15,6 @@ import {
   FaChalkboardTeacher,
   FaSave,
   FaSchool,
-  FaCalendarAlt,
   FaUserGraduate,
   FaIdCard,
   FaFilter,
@@ -53,8 +52,7 @@ const EnhancedFacultyEvaluationSystem = ({
   });
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder] = useState('desc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  // Removed pagination - showing all reviews in scrollable view
 
   // Form Data for Edit/Create
   const [formData, setFormData] = useState({
@@ -494,11 +492,8 @@ const EnhancedFacultyEvaluationSystem = ({
     }
   });
 
-  // Pagination Logic
-  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentReviews = sortedReviews.slice(startIndex, endIndex);
+  // Remove pagination - show all filtered and sorted reviews
+  const currentReviews = sortedReviews;
 
   // Get unique filter values
   const currentReviewsData = enhancedReviews.length > 0 ? enhancedReviews : reviews;
@@ -550,456 +545,471 @@ const EnhancedFacultyEvaluationSystem = ({
   };
 
   return (
-    <div className="enhanced-faculty-evaluation-system">
-      {/* System Header */}
-      <div className="system-header">
-        <div className="header-content">
-          <div className="header-title">
-            <FaChalkboardTeacher className="header-icon" />
-            <div>
-              <h1>Faculty Evaluation Management System</h1>
-              <p className="subtitle">
-                Comprehensive Academic Performance Review Portal
-                {loadingEnhancement && <span className="loading-text"> • Updating academic info...</span>}
-              </p>
-            </div>
+    <div className="review-list">
+      {/* Header Section */}
+      <div className="list-header">
+        <h2>Faculty Reviews ({analytics.totalReviews})</h2>
+        <p>Manage and view all faculty performance evaluations</p>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="stats-grid">
+        {isFiltered && (
+          <div className="filter-indicator" style={{
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '12px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}>
+            <FaFilter />
+            Showing filtered results
+            <span style={{
+              background: 'rgba(255,255,255,0.2)',
+              padding: '2px 8px',
+              borderRadius: '10px',
+              fontSize: '12px'
+            }}>
+              {analytics.totalReviews} of {currentReviewsData.length} reviews
+            </span>
           </div>
-          <div className="header-actions">
-            <button 
-              className="btn btn-primary"
-              onClick={() => openModal(null, 'create')}
-            >
-              <FaPlus /> New Review
-            </button>
-            <button 
-              className="btn btn-secondary"
-              onClick={onRefresh}
-              disabled={loading}
-            >
-              <FaSync className={loading ? 'spinning' : ''} />
-              {loading ? 'Refreshing...' : 'Refresh'}
-            </button>
-            <button className="btn btn-success">
-              <FaDownload /> Export Data
-            </button>
+        )}
+        
+        <div className="stat-card">
+          <div className="stat-number">{analytics.totalReviews}</div>
+          <div className="stat-label">
+            {isFiltered ? 'Filtered Reviews' : 'Total Reviews'}
+          </div>
+          <div className="stat-icon">
+            <FaChartBar />
           </div>
         </div>
-
-        {/* Analytics Dashboard */}
-        <div className="analytics-dashboard">
-          {isFiltered && (
-            <div className="filter-indicator" style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              marginBottom: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}>
-              <FaFilter />
-              Showing filtered results
-              <span style={{
-                background: 'rgba(255,255,255,0.2)',
-                padding: '2px 8px',
-                borderRadius: '10px',
-                fontSize: '12px'
-              }}>
-                {analytics.totalReviews} of {currentReviewsData.length} reviews
-              </span>
-            </div>
-          )}
-          <div className="analytics-card blue">
-            <div className="card-content">
-              <div className="card-number">{analytics.totalReviews}</div>
-              <div className="card-label">
-                {isFiltered ? 'Filtered Reviews' : 'Total Reviews'}
-              </div>
-            </div>
-            <FaChartBar className="card-icon" />
+        
+        <div className="stat-card">
+          <div className="stat-number">{analytics.averageRating}/5</div>
+          <div className="stat-label">
+            {isFiltered ? 'Filtered Avg Rating' : 'Average Rating'}
           </div>
-          
-          <div className="analytics-card green">
-            <div className="card-content">
-              <div className="card-number">{analytics.averageRating}/5</div>
-              <div className="card-label">
-                {isFiltered ? 'Filtered Avg Rating' : 'Average Rating'}
-              </div>
-            </div>
-            <FaStar className="card-icon" />
+          <div className="stat-icon">
+            <FaStar />
           </div>
-          
-          <div className="analytics-card purple">
-            <div className="card-content">
-              <div className="card-number">{analytics.excellentReviews}</div>
-              <div className="card-label">
-                {isFiltered ? 'Filtered Excellence' : 'Excellence Awards'}
-              </div>
-            </div>
-            <FaAward className="card-icon" />
+        </div>
+        
+        <div className="stat-card">
+          <div className="stat-number">{analytics.excellentReviews}</div>
+          <div className="stat-label">
+            {isFiltered ? 'Filtered Excellence' : 'Excellence Awards'}
           </div>
-          
-          <div className="analytics-card emerald">
-            <div className="card-content">
-              <div className="card-number">{analytics.recentReviews}</div>
-              <div className="card-label">
-                {isFiltered ? 'Filtered Recent' : 'This Week'}
-              </div>
-            </div>
-            <FaClock className="card-icon" />
+          <div className="stat-icon">
+            <FaAward />
+          </div>
+        </div>
+        
+        <div className="stat-card">
+          <div className="stat-number">{analytics.recentReviews}</div>
+          <div className="stat-label">
+            {isFiltered ? 'Filtered Recent' : 'This Week'}
+          </div>
+          <div className="stat-icon">
+            <FaClock />
           </div>
         </div>
       </div>
 
-      {/* Controls and Filters */}
-      <div className="controls-section">
-        <div className="search-controls">
+      {/* Action Buttons */}
+      <div className="header-actions" style={{ 
+        display: 'flex', 
+        gap: '12px', 
+        justifyContent: 'center',
+        marginBottom: '24px'
+      }}>
+        <button 
+          className="btn btn-primary"
+          onClick={() => openModal(null, 'create')}
+        >
+          <FaPlus /> New Review
+        </button>
+        <button 
+          className="btn btn-outline"
+          onClick={onRefresh}
+          disabled={loading}
+        >
+          <FaSync className={loading ? 'spinning' : ''} />
+          {loading ? 'Refreshing...' : 'Refresh'}
+        </button>
+        <button className="btn btn-outline">
+          <FaDownload /> Export Data
+        </button>
+      </div>
+
+      {/* Search and Filter Controls */}
+      <div className="search-filter-container">
+        <div className="search-section">
           {/* Only show internal search if no external search is provided */}
           {!externalSearchTerm && (
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by student name, admission no, teacher..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="search-group">
+              <div className="search-input-wrapper">
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Search by student name, admission no, teacher..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           )}
           
-          <div className="view-toggle">
+          <div className="review-view-controls">
             <button
-              className={`view-toggle-button ${viewMode === 'table' ? 'active' : ''}`}
+              className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
               onClick={() => setViewMode('table')}
             >
               Table View
             </button>
             <button
-              className={`view-toggle-button ${viewMode === 'card' ? 'active' : ''}`}
+              className={`view-toggle-btn ${viewMode === 'card' ? 'active' : ''}`}
               onClick={() => setViewMode('card')}
             >
               Card View
             </button>
           </div>
-          
-          {/* Active Filters Indicator */}
-          {Object.values(filters).some(value => value !== '' && value !== 'all') && (
-            <div className="active-filters-indicator">
-              <span className="filter-count">
-                {Object.values(filters).filter(value => value !== '' && value !== 'all').length} filter(s) active
-              </span>
-            </div>
-          )}
         </div>
 
-        {/* Advanced Filters */}
-        {Object.values(filters).some(value => value !== '' && value !== 'all') && (
-          <div className="active-filters-summary">
-            <h4>Active Filters: {Object.values(filters).filter(value => value !== '' && value !== 'all').length}</h4>
-          </div>
-        )}
-        
-        <div className="filters-row">
-          <div className="filter-group">
-            <label>Teacher Department</label>
-            <select
-              value={filters.department}
-              onChange={(e) => setFilters(prev => ({ ...prev, department: e.target.value }))}
-            >
-              <option value="">All Departments</option>
-              {[...new Set((enhancedReviews.length > 0 ? enhancedReviews : reviews).map(r => r.teacherDepartment))].map(dept => (
-                <option key={dept} value={dept}>{dept}</option>
-              ))}
-            </select>
-          </div>
+        {/* Filter Controls */}
+        <div className="filter-section">
+          <div className="filter-row">
+            <div className="filter-group">
+              <label className="filter-label">Department</label>
+              <select
+                className="filter-select"
+                value={filters.department}
+                onChange={(e) => setFilters(prev => ({ ...prev, department: e.target.value }))}
+              >
+                <option value="">All Departments</option>
+                {[...new Set((enhancedReviews.length > 0 ? enhancedReviews : reviews).map(r => r.teacherDepartment))].map(dept => (
+                  <option key={dept} value={dept}>{dept}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Branch</label>
-            <select
-              value={filters.branch}
-              onChange={(e) => setFilters(prev => ({ ...prev, branch: e.target.value }))}
-            >
-              <option value="">All Branches</option>
-              {uniqueBranches.map(branch => (
-                <option key={branch} value={branch}>{branch}</option>
-              ))}
-            </select>
-          </div>
+            <div className="filter-group">
+              <label className="filter-label">Branch</label>
+              <select
+                className="filter-select"
+                value={filters.branch}
+                onChange={(e) => setFilters(prev => ({ ...prev, branch: e.target.value }))}
+              >
+                <option value="">All Branches</option>
+                {uniqueBranches.map(branch => (
+                  <option key={branch} value={branch}>{branch}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Semester</label>
-            <select
-              value={filters.semester}
-              onChange={(e) => setFilters(prev => ({ ...prev, semester: e.target.value }))}
-            >
-              <option value="">All Semesters</option>
-              {uniqueSemesters.map(semester => (
-                <option key={semester} value={semester}>{semester}</option>
-              ))}
-            </select>
-          </div>
+            <div className="filter-group">
+              <label className="filter-label">Semester</label>
+              <select
+                className="filter-select"
+                value={filters.semester}
+                onChange={(e) => setFilters(prev => ({ ...prev, semester: e.target.value }))}
+              >
+                <option value="">All Semesters</option>
+                {uniqueSemesters.map(semester => (
+                  <option key={semester} value={semester}>{semester}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Section</label>
-            <select
-              value={filters.section}
-              onChange={(e) => setFilters(prev => ({ ...prev, section: e.target.value }))}
-            >
-              <option value="">All Sections</option>
-              {uniqueSections.map(section => (
-                <option key={section} value={section}>{section}</option>
-              ))}
-            </select>
-          </div>
+            <div className="filter-group">
+              <label className="filter-label">Section</label>
+              <select
+                className="filter-select"
+                value={filters.section}
+                onChange={(e) => setFilters(prev => ({ ...prev, section: e.target.value }))}
+              >
+                <option value="">All Sections</option>
+                {uniqueSections.map(section => (
+                  <option key={section} value={section}>{section}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Faculty</label>
-            <select
-              value={filters.faculty}
-              onChange={(e) => setFilters(prev => ({ ...prev, faculty: e.target.value }))}
-            >
-              <option value="">All Faculty</option>
-              {[...new Set((enhancedReviews.length > 0 ? enhancedReviews : reviews).map(r => r.teacherName))].map(teacher => (
-                <option key={teacher} value={teacher}>{teacher}</option>
-              ))}
-            </select>
-          </div>
+            <div className="filter-group">
+              <label className="filter-label">Faculty</label>
+              <select
+                className="filter-select"
+                value={filters.faculty}
+                onChange={(e) => setFilters(prev => ({ ...prev, faculty: e.target.value }))}
+              >
+                <option value="">All Faculty</option>
+                {[...new Set((enhancedReviews.length > 0 ? enhancedReviews : reviews).map(r => r.teacherName))].map(teacher => (
+                  <option key={teacher} value={teacher}>{teacher}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Performance</label>
-            <select
-              value={filters.rating}
-              onChange={(e) => setFilters(prev => ({ ...prev, rating: e.target.value }))}
-            >
-              <option value="">All Ratings</option>
-              <option value="excellent">Excellent (4.5+)</option>
-              <option value="good">Good (3.5-4.4)</option>
-              <option value="average">Average (2.5-3.4)</option>
-              <option value="poor">Below Average (1.5-2.4)</option>
-              <option value="very-poor">Poor (&lt;1.5)</option>
-            </select>
-          </div>
+            <div className="filter-group">
+              <label className="filter-label">Performance</label>
+              <select
+                className="filter-select"
+                value={filters.rating}
+                onChange={(e) => setFilters(prev => ({ ...prev, rating: e.target.value }))}
+              >
+                <option value="">All Ratings</option>
+                <option value="excellent">Excellent (4.5+)</option>
+                <option value="good">Good (3.5-4.4)</option>
+                <option value="average">Average (2.5-3.4)</option>
+                <option value="poor">Below Average (1.5-2.4)</option>
+                <option value="very-poor">Poor (&lt;1.5)</option>
+              </select>
+            </div>
 
-          <div className="filter-group">
-            <label>Sort By</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="createdAt">Date Created</option>
-              <option value="studentName">Student Name</option>
-              <option value="teacherName">Faculty Name</option>
-              <option value="overallEvaluation">Rating</option>
-            </select>
-          </div>
+            <div className="filter-group">
+              <label className="filter-label">Sort By</label>
+              <select
+                className="filter-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="createdAt">Date Created</option>
+                <option value="studentName">Student Name</option>
+                <option value="teacherName">Faculty Name</option>
+                <option value="overallEvaluation">Rating</option>
+              </select>
+            </div>
 
-          <button
-            className="btn btn-outline"
-            onClick={() => setFilters({ 
-              department: '', 
-              branch: '', 
-              semester: '', 
-              section: '', 
-              faculty: '', 
-              rating: '', 
-              dateRange: 'all' 
-            })}
-          >
-            Clear Filters
-          </button>
+            <button
+              className="btn btn-outline"
+              onClick={() => setFilters({ 
+                department: '', 
+                branch: '', 
+                semester: '', 
+                section: '', 
+                faculty: '', 
+                rating: '', 
+                dateRange: 'all' 
+              })}
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Reviews Display */}
-      <div className="reviews-container">
-        {viewMode === 'table' ? (
-          <div className="review-table-container">
-            <table className="review-table">
-              <thead>
-                <tr>
-                  <th>Student Details</th>
-                  <th>Academic Info</th>
-                  <th>Faculty Details</th>
-                  <th>Performance Rating</th>
-                  <th>Review Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentReviews.map((review) => (
-                  <tr key={review._id} className="review-row">
-                    <td>
-                      <div className="student-info">
-                        <div className="student-name">{review.studentName}</div>
-                        <div className="admission-no">{review.admissionNo}</div>
+      {currentReviews.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">📋</div>
+          <h3>No Reviews Found</h3>
+          <p>{isFiltered ? 'No reviews match your current filters.' : 'No faculty reviews have been submitted yet.'}</p>
+          {isFiltered && (
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setSearchTerm('');
+                setFilters({ 
+                  department: '', 
+                  semester: '', 
+                  section: '', 
+                  branch: '', 
+                  faculty: '', 
+                  rating: '', 
+                  dateRange: 'all' 
+                });
+              }}
+            >
+              Clear All Filters
+            </button>
+          )}
+        </div>
+      ) : viewMode === 'table' ? (
+        <div className="review-table-container">
+          <table className="review-table">
+            <thead>
+              <tr>
+                <th>Student Details</th>
+                <th>Academic Info</th>
+                <th>Faculty Details</th>
+                <th>Performance Rating</th>
+                <th>Review Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentReviews.map((review) => (
+                <tr key={review._id} className="review-row">
+                  <td>
+                    <div className="student-cell">
+                      <div className="faculty-avatar-small">
+                        {review.studentName.charAt(0).toUpperCase()}
                       </div>
-                    </td>
-                    <td>
-                      <div className="academic-info">
-                        {review.enhancedBranchSemester || review.branchSemester}
-                        {loadingEnhancement && (
-                          <span className="loading-text"> (updating...)</span>
-                        )}
+                      <div>
+                        <div className="faculty-name">{review.studentName}</div>
+                        <div className="student-admission">{review.admissionNo}</div>
                       </div>
-                    </td>
-                    <td>
-                      <div className="faculty-info">
+                    </div>
+                  </td>
+                  <td>
+                    <div className="academic-info">
+                      {review.enhancedBranchSemester || review.branchSemester}
+                      {loadingEnhancement && (
+                        <span style={{ color: '#6b7280', fontSize: '0.8rem' }}> (updating...)</span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="teacher-cell">
+                      <div className="faculty-avatar-small">
+                        {review.teacherName.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
                         <div className="faculty-name">{review.teacherName}</div>
-                        <div className="subject">{review.teacherSubject}</div>
-                        <div className="department">{review.teacherDepartment}</div>
+                        <div className="faculty-subject">{review.teacherSubject}</div>
+                        <div className="faculty-department">{review.teacherDepartment}</div>
                       </div>
-                    </td>
-                    <td>
-                      <div className="rating-display">
-                        <div className={`rating-badge ${getRatingBadgeClass(review.overallEvaluation)}`}>
-                          {review.overallEvaluation}/5
-                        </div>
-                        <div className="star-rating">
-                          {renderStars(review.overallEvaluation, null, null, true)}
-                        </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="rating-cell">
+                      <div className="rating-stars-small">
+                        {renderStars(review.overallEvaluation, null, null, true)}
                       </div>
-                    </td>
-                    <td>
-                      <div className="date-info">
-                        {formatDate(review.createdAt)}
+                      <div className="rating-number-small" style={{ 
+                        color: getRatingBadgeClass(review.overallEvaluation) === 'excellent' ? '#10b981' : 
+                               getRatingBadgeClass(review.overallEvaluation) === 'good' ? '#3b82f6' : 
+                               getRatingBadgeClass(review.overallEvaluation) === 'average' ? '#f59e0b' : '#ef4444'
+                      }}>
+                        {review.overallEvaluation}/5
                       </div>
-                    </td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="action-button view"
-                          onClick={() => openModal(review, 'view')}
-                          title="View Details"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          className="action-button edit"
-                          onClick={() => openModal(review, 'edit')}
-                          title="Edit Review"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="action-button delete"
-                          onClick={() => onDelete(review._id)}
-                          title="Delete Review"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="date-info">
+                      {formatDate(review.createdAt)}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="table-actions">
+                      <button
+                        className="action-btn view"
+                        onClick={() => openModal(review, 'view')}
+                        title="View Details"
+                      >
+                        <FaEye />
+                      </button>
+                      <button
+                        className="action-btn edit"
+                        onClick={() => openModal(review, 'edit')}
+                        title="Edit Review"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="action-btn delete"
+                        onClick={() => onDelete(review._id)}
+                        title="Delete Review"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="reviews-grid">
+          <div className="review-grid">
             {currentReviews.map((review) => (
               <div key={review._id} className="review-card">
-                <div className="review-card-header">
-                  <div className="card-avatar">
-                    <FaUserGraduate />
+                <div className="faculty-header">
+                  <div className="faculty-avatar">
+                    {review.studentName.charAt(0).toUpperCase()}
                   </div>
-                  <div className="card-info">
-                    <h4>{review.studentName}</h4>
-                    <p>{review.admissionNo}</p>
-                    <div className="academic-badge">
-                      {review.enhancedBranchSemester || review.branchSemester}
-                      {loadingEnhancement && (
-                        <span className="loading-text"> (updating...)</span>
-                      )}
+                  <div className="faculty-info">
+                    <h3 className="faculty-name">{review.studentName}</h3>
+                    <p className="faculty-department">{review.admissionNo}</p>
+                    <p className="faculty-subject">{review.enhancedBranchSemester || review.branchSemester}</p>
+                    {loadingEnhancement && (
+                      <span style={{ color: '#6b7280', fontSize: '0.8rem' }}> (updating...)</span>
+                    )}
+                  </div>
+                  <div className="faculty-rating">
+                    <div className="rating-container">
+                      <div className="rating-stars">
+                        {renderStars(review.overallEvaluation)}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                        <span className="rating-text" style={{ 
+                          color: getRatingBadgeClass(review.overallEvaluation) === 'excellent' ? '#10b981' : 
+                                 getRatingBadgeClass(review.overallEvaluation) === 'good' ? '#3b82f6' : 
+                                 getRatingBadgeClass(review.overallEvaluation) === 'average' ? '#f59e0b' : '#ef4444',
+                          fontWeight: 'bold' 
+                        }}>
+                          {review.overallEvaluation}/5.0
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className={`rating-badge ${getRatingBadgeClass(review.overallEvaluation)}`}>
-                    {review.overallEvaluation}/5
                   </div>
                 </div>
                 
-                <div className="card-content">
-                  <div className="faculty-section">
-                    <h5><FaChalkboardTeacher /> Faculty Information</h5>
-                    <p><strong>Name:</strong> {review.teacherName}</p>
-                    <p><strong>Subject:</strong> {review.teacherSubject}</p>
-                    <p><strong>Department:</strong> {review.teacherDepartment}</p>
+                <div style={{ padding: '16px 0' }}>
+                  <div style={{ marginBottom: '12px' }}>
+                    <strong>Faculty:</strong> {review.teacherName}
                   </div>
-                  
-                  <div className="rating-section">
-                    <h5><FaStar /> Performance Overview</h5>
-                    <div className="star-rating">
-                      {renderStars(review.overallEvaluation, null, null, true)}
-                    </div>
-                    <p className="rating-label">
-                      {ratingLabels[Math.round(review.overallEvaluation)]}
-                    </p>
+                  <div style={{ marginBottom: '12px' }}>
+                    <strong>Subject:</strong> {review.teacherSubject}
                   </div>
-                  
-                  <div className="feedback-preview">
-                    <h5><FaComments /> Feedback</h5>
-                    <p>{review.suggestions.substring(0, 100)}...</p>
+                  <div style={{ marginBottom: '12px' }}>
+                    <strong>Department:</strong> {review.teacherDepartment}
+                  </div>
+                  <div style={{ marginBottom: '12px' }}>
+                    <strong>Date:</strong> {formatDate(review.createdAt)}
                   </div>
                 </div>
                 
-                <div className="card-footer">
-                  <div className="date-info">
-                    <FaCalendarAlt /> {formatDate(review.createdAt)}
-                  </div>
-                  <div className="card-actions">
-                    <button
-                      className="action-button view"
-                      onClick={() => openModal(review, 'view')}
-                    >
-                      <FaEye />
-                    </button>
-                    <button
-                      className="action-button edit"
-                      onClick={() => openModal(review, 'edit')}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="action-button delete"
-                      onClick={() => onDelete(review._id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
+                <div className="table-actions" style={{ justifyContent: 'center', padding: '16px 0 0 0' }}>
+                  <button
+                    className="action-btn view"
+                    onClick={() => openModal(review, 'view')}
+                    title="View Details"
+                  >
+                    <FaEye />
+                  </button>
+                  <button
+                    className="action-btn edit"
+                    onClick={() => openModal(review, 'edit')}
+                    title="Edit Review"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="action-btn delete"
+                    onClick={() => onDelete(review._id)}
+                    title="Delete Review"
+                  >
+                    <FaTrash />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="pagination">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="pagination-btn"
-            >
-              Previous
-            </button>
-            
-            <div className="pagination-info">
-              Page {currentPage} of {totalPages} 
-              ({sortedReviews.length} reviews)
-            </div>
-            
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="pagination-btn"
-            >
-              Next
-            </button>
+        {/* Review Count Display */}
+        {sortedReviews.length > 0 && (
+          <div className="review-stats-info">
+            Showing all {sortedReviews.length} reviews
+            {isFiltered && ` (filtered from ${reviews.length} total)`}
           </div>
         )}
-      </div>
 
       {/* Enhanced Modal */}
       {showModal && (
