@@ -18,6 +18,19 @@ export const AuthProvider = ({ children }) => {
 
   // Check authentication status on app load
   useEffect(() => {
+    // Check if URL has clear parameter (for production debugging)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('clear') === 'true') {
+      localStorage.clear();
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
+      showNotification('All data cleared successfully', 'success');
+      // Remove the parameter from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+    
     checkAuthStatus();
   }, []);
 
@@ -27,39 +40,57 @@ export const AuthProvider = ({ children }) => {
       const adminInfo = localStorage.getItem('adminInfo');
       if (adminInfo) {
         const admin = JSON.parse(adminInfo);
-        setUser({ ...admin, userType: 'admin' });
-        setIsAuthenticated(true);
-        setLoading(false);
-        return;
+        // Validate admin data
+        if (admin && (admin._id || admin.id) && admin.name) {
+          setUser({ ...admin, userType: 'admin' });
+          setIsAuthenticated(true);
+          setLoading(false);
+          return;
+        } else {
+          // Invalid admin data, clear it
+          localStorage.removeItem('adminInfo');
+        }
       }
 
       // Check for student
       const studentInfo = localStorage.getItem('studentInfo');
       if (studentInfo) {
         const student = JSON.parse(studentInfo);
-        setUser({ ...student, userType: 'student' });
-        setIsAuthenticated(true);
-        setLoading(false);
-        return;
+        // Validate student data
+        if (student && (student._id || student.id) && student.name) {
+          setUser({ ...student, userType: 'student' });
+          setIsAuthenticated(true);
+          setLoading(false);
+          return;
+        } else {
+          // Invalid student data, clear it
+          localStorage.removeItem('studentInfo');
+        }
       }
 
       // Check for faculty
       const facultyInfo = localStorage.getItem('facultyInfo');
       if (facultyInfo) {
         const faculty = JSON.parse(facultyInfo);
-        setUser({ ...faculty, userType: 'faculty' });
-        setIsAuthenticated(true);
-        setLoading(false);
-        return;
+        // Validate faculty data
+        if (faculty && (faculty._id || faculty.id) && faculty.name) {
+          setUser({ ...faculty, userType: 'faculty' });
+          setIsAuthenticated(true);
+          setLoading(false);
+          return;
+        } else {
+          // Invalid faculty data, clear it
+          localStorage.removeItem('facultyInfo');
+        }
       }
 
-      // No authentication found
+      // No valid authentication found
       setUser(null);
       setIsAuthenticated(false);
       setLoading(false);
     } catch (error) {
       console.error('Error checking auth status:', error);
-      // Clear corrupted data
+      // Clear all potentially corrupted data
       localStorage.removeItem('adminInfo');
       localStorage.removeItem('studentInfo');
       localStorage.removeItem('facultyInfo');
@@ -144,6 +175,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Emergency function to clear all localStorage (for production issues)
+  const clearAllData = () => {
+    try {
+      localStorage.clear();
+      setUser(null);
+      setIsAuthenticated(false);
+      showNotification('All data cleared successfully', 'success');
+      setTimeout(() => {
+        window.location.replace('/');
+      }, 1000);
+    } catch (error) {
+      console.error('Clear data error:', error);
+      window.location.replace('/');
+    }
+  };
+
   const updateUser = (userData) => {
     try {
       if (user && user.userType) {
@@ -197,7 +244,8 @@ export const AuthProvider = ({ children }) => {
     hasRole,
     userType: user?.userType || null,
     notification,
-    showNotification
+    showNotification,
+    clearAllData
   };
 
   return (
