@@ -21,6 +21,7 @@ import { CalendarContent } from '../../Calendar';
 import logo from '../../../Assets/logo.png';
 import axios from 'axios';
 import API_BASE_URL from '../../../config/api';
+import './StudentDashboard.css';
 
 const Studentdash = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -399,7 +400,7 @@ const Studentdash = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-purple-50 to-indigo-50">
+    <div className="min-h-screen flex bg-gradient-to-br from-purple-50 to-indigo-50 student-dashboard">
       {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
         <div 
@@ -410,14 +411,14 @@ const Studentdash = () => {
       
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 transform ${
+        className={`student-sidebar fixed inset-y-0 left-0 transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out bg-white shadow-xl w-64 z-50`}
+        } lg:translate-x-0 transition-transform duration-300 ease-in-out bg-white shadow-xl w-64 z-50`}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-purple-600">Student Portal</h2>
+        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-200">
+          <h2 className="text-lg lg:text-xl font-bold text-purple-600">Student Portal</h2>
           <button
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="student-nav-btn text-gray-500 hover:text-gray-700 transition-colors lg:hidden"
             onClick={() => setSidebarOpen(false)}
           >
             <FaTimes />
@@ -425,104 +426,104 @@ const Studentdash = () => {
         </div>
 
         {/* Student Profile */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-4 lg:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-              <FaUser className="text-white text-lg" />
+            <div className="student-profile-btn w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <FaUser className="text-white text-sm lg:text-lg" />
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">{studentInfo?.name || 'Student'}</h3>
-              <p className="text-sm text-gray-600">{studentInfo?.admissionNo || 'Admission No'}</p>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-gray-800 text-sm lg:text-base truncate">{studentInfo?.name || 'Student'}</h3>
+              <p className="text-xs lg:text-sm text-gray-600 truncate">{studentInfo?.admissionNo || 'Admission No'}</p>
             </div>
           </div>
         </div>
 
         {/* Sidebar Menu */}
-        <nav className="flex flex-col p-4 space-y-2">
+        <nav className="flex flex-col p-2 lg:p-4 space-y-1 lg:space-y-2">
           <button
             onClick={() => {
               handleTabChange('dashboard');
-              setSidebarOpen(false); // Auto close drawer
+              setSidebarOpen(false);
             }}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`student-sidebar-btn flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg transition-colors text-sm lg:text-base ${
               activeTab === 'dashboard'
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <FaHome />
+            <FaHome className="flex-shrink-0" />
             <span>Dashboard</span>
           </button>
           
           <Link
             to="/reviewform"
-            onClick={() => setSidebarOpen(false)} // Auto close drawer
-            className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            onClick={() => setSidebarOpen(false)}
+            className="student-sidebar-btn flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors text-sm lg:text-base"
           >
-            <FaEdit />
+            <FaEdit className="flex-shrink-0" />
             <span>Submit Review</span>
           </Link>
           
           <button
             onClick={() => {
               handleTabChange('my-reviews');
-              setSidebarOpen(false); // Auto close drawer
+              setSidebarOpen(false);
             }}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`student-sidebar-btn flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg transition-colors text-sm lg:text-base ${
               activeTab === 'my-reviews'
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <FaStar />
+            <FaStar className="flex-shrink-0" />
             <span>My Reviews</span>
           </button>
           
           <Link
             to="/calendar"
-            onClick={() => setSidebarOpen(false)} // Auto close drawer
-            className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            onClick={() => setSidebarOpen(false)}
+            className="student-sidebar-btn flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors text-sm lg:text-base"
           >
-            <FaCalendar />
+            <FaCalendar className="flex-shrink-0" />
             <span>Calendar</span>
           </Link>
           
           <button
             onClick={() => {
               handleTabChange('profile');
-              setSidebarOpen(false); // Auto close drawer
+              setSidebarOpen(false);
             }}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`student-sidebar-btn flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg transition-colors text-sm lg:text-base ${
               activeTab === 'profile'
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            <FaCog />
+            <FaCog className="flex-shrink-0" />
             <span>Profile</span>
           </button>
           
           <button 
             onClick={() => {
               handleLogout();
-              setSidebarOpen(false); // Auto close drawer
+              setSidebarOpen(false);
             }}
-            className="flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors mt-auto"
+            className="student-sidebar-btn flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors mt-auto text-sm lg:text-base"
           >
-            <FaSignOutAlt />
+            <FaSignOutAlt className="flex-shrink-0" />
             <span>Logout</span>
           </button>
         </nav>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-64">
         {/* Top Navbar - Fixed */}
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-          <div className="flex justify-between items-center px-6 py-4">
-            <div className="flex items-center space-x-4">
+        <header className="student-navbar bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+          <div className="flex justify-between items-center px-4 lg:px-6 py-3 lg:py-4">
+            <div className="flex items-center space-x-3 lg:space-x-4">
               <button
-                className="text-gray-600 hover:text-gray-800 transition-colors"
+                className="student-nav-btn text-gray-600 hover:text-gray-800 transition-colors lg:hidden"
                 onClick={() => setSidebarOpen(!isSidebarOpen)}
               >
                 <FaBars />
@@ -531,26 +532,26 @@ const Studentdash = () => {
                 <img 
                   src={logo} 
                   alt="FEMS Logo" 
-                  className="h-10 w-auto"
+                  className="h-8 lg:h-10 w-auto"
                 />
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              <div className="relative hidden sm:block">
+                <FaSearch className="absolute left-2 lg:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm lg:text-base" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="student-search pl-8 lg:pl-10 pr-3 lg:pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm lg:text-base"
                 />
               </div>
               <Link 
                 to='/userprofile'
-                onClick={() => setSidebarOpen(false)} // Auto close drawer
+                onClick={() => setSidebarOpen(false)}
               >
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <FaUser className="text-white" />
+                <div className="student-profile-btn w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <FaUser className="text-white text-sm lg:text-base" />
                 </div>
               </Link>
             </div>
@@ -558,53 +559,52 @@ const Studentdash = () => {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          {activeTab === 'dashboard' && (
-            <>
+        <main className="student-main-content flex-1 p-3 lg:p-6 overflow-y-auto">{activeTab === 'dashboard' && (
+            <div className="student-fade-in">
               {/* Enhanced Hero Section */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-3xl shadow-2xl mb-8">
+              <div className="student-hero relative overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl mb-6 lg:mb-8">
                 {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-0 left-0 w-72 h-72 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                  <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
+                <div className="absolute inset-0 opacity-5 lg:opacity-10">
+                  <div className="absolute top-0 left-0 w-48 h-48 lg:w-72 lg:h-72 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                  <div className="absolute bottom-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
                 </div>
                 
-                <div className="relative p-8 lg:p-12">
+                <div className="relative p-4 lg:p-8 xl:p-12">
                   <div className="flex flex-col lg:flex-row items-center justify-between">
                     {/* Left Content */}
-                    <div className="lg:w-2/3 mb-8 lg:mb-0">
+                    <div className="lg:w-2/3 mb-6 lg:mb-0 text-center lg:text-left">
                       {/* Greeting */}
-                      <div className="flex items-center mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mr-4">
-                          <span className="text-2xl">👋</span>
+                      <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start mb-4">
+                        <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mb-3 sm:mb-0 sm:mr-4">
+                          <span className="text-xl lg:text-2xl">👋</span>
                         </div>
                         <div>
-                          <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight">
+                          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight">
                             Welcome back,
                           </h1>
-                          <h2 className="text-3xl lg:text-4xl font-bold text-yellow-300">
+                          <h2 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-yellow-300">
                             {studentInfo?.name || studentInfo?.username || 'Student'}!
                           </h2>
                         </div>
                       </div>
                       
                       {/* Description */}
-                      <p className="text-purple-100 text-lg lg:text-xl mb-8 leading-relaxed max-w-2xl">
+                      <p className="text-purple-100 text-sm sm:text-base lg:text-lg xl:text-xl mb-6 lg:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                         Shape the future of education by sharing your valuable feedback. Track your academic journey and contribute to improving teaching quality.
                       </p>
                       
                       {/* Quick Action Buttons */}
-                      <div className="flex flex-wrap gap-4 mb-8">
+                      <div className="student-hero-buttons flex flex-col sm:flex-row flex-wrap gap-3 lg:gap-4 mb-6 lg:mb-8 justify-center lg:justify-start">
                         <button
                           onClick={() => handleTabChange('my-reviews')}
-                          className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center space-x-2 border border-white border-opacity-20"
+                          className="student-btn bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm px-4 lg:px-6 py-2 lg:py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center space-x-2 border border-white border-opacity-20 text-sm lg:text-base"
                         >
                           <FaStar className="text-yellow-300" />
                           <span>My Reviews</span>
                         </button>
                         <button
                           onClick={() => window.location.href = '/reviewform'}
-                          className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+                          className="student-btn bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 px-4 lg:px-6 py-2 lg:py-3 rounded-xl text-white font-semibold transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl text-sm lg:text-base"
                         >
                           <FaEdit />
                           <span>Submit Review</span>
@@ -613,41 +613,41 @@ const Studentdash = () => {
                       
                       {/* Student Info Cards */}
                       {studentInfo && (
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="student-info-grid grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
                           {studentInfo.admissionNo && (
-                            <div className="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-3 rounded-lg border border-white border-opacity-20">
-                              <p className="text-purple-200 text-sm font-medium">Admission No</p>
-                              <p className="text-white font-semibold">{studentInfo.admissionNo}</p>
+                            <div className="student-info-card bg-white bg-opacity-15 backdrop-blur-sm px-3 lg:px-4 py-2 lg:py-3 rounded-lg border border-white border-opacity-20">
+                              <p className="text-purple-200 text-xs lg:text-sm font-medium">Admission No</p>
+                              <p className="text-white font-semibold text-xs lg:text-sm truncate">{studentInfo.admissionNo}</p>
                             </div>
                           )}
                           {studentInfo.universityRollNo && (
-                            <div className="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-3 rounded-lg border border-white border-opacity-20">
-                              <p className="text-purple-200 text-sm font-medium">Roll Number</p>
-                              <p className="text-white font-semibold">{studentInfo.universityRollNo}</p>
+                            <div className="student-info-card bg-white bg-opacity-15 backdrop-blur-sm px-3 lg:px-4 py-2 lg:py-3 rounded-lg border border-white border-opacity-20">
+                              <p className="text-purple-200 text-xs lg:text-sm font-medium">Roll Number</p>
+                              <p className="text-white font-semibold text-xs lg:text-sm truncate">{studentInfo.universityRollNo}</p>
                             </div>
                           )}
                           {studentInfo.semester && (
-                            <div className="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-3 rounded-lg border border-white border-opacity-20">
-                              <p className="text-purple-200 text-sm font-medium">Semester</p>
-                              <p className="text-white font-semibold">{studentInfo.semester}</p>
+                            <div className="student-info-card bg-white bg-opacity-15 backdrop-blur-sm px-3 lg:px-4 py-2 lg:py-3 rounded-lg border border-white border-opacity-20">
+                              <p className="text-purple-200 text-xs lg:text-sm font-medium">Semester</p>
+                              <p className="text-white font-semibold text-xs lg:text-sm">{studentInfo.semester}</p>
                             </div>
                           )}
                           {studentInfo.section && (
-                            <div className="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-3 rounded-lg border border-white border-opacity-20">
-                              <p className="text-purple-200 text-sm font-medium">Section</p>
-                              <p className="text-white font-semibold">{studentInfo.section}</p>
+                            <div className="student-info-card bg-white bg-opacity-15 backdrop-blur-sm px-3 lg:px-4 py-2 lg:py-3 rounded-lg border border-white border-opacity-20">
+                              <p className="text-purple-200 text-xs lg:text-sm font-medium">Section</p>
+                              <p className="text-white font-semibold text-xs lg:text-sm">{studentInfo.section}</p>
                             </div>
                           )}
                           {studentInfo.department && (
-                            <div className="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-3 rounded-lg border border-white border-opacity-20">
-                              <p className="text-purple-200 text-sm font-medium">Department</p>
-                              <p className="text-white font-semibold">{studentInfo.department}</p>
+                            <div className="student-info-card bg-white bg-opacity-15 backdrop-blur-sm px-3 lg:px-4 py-2 lg:py-3 rounded-lg border border-white border-opacity-20">
+                              <p className="text-purple-200 text-xs lg:text-sm font-medium">Department</p>
+                              <p className="text-white font-semibold text-xs lg:text-sm truncate">{studentInfo.department}</p>
                             </div>
                           )}
                           {studentInfo.course && (
-                            <div className="bg-white bg-opacity-15 backdrop-blur-sm px-4 py-3 rounded-lg border border-white border-opacity-20">
-                              <p className="text-purple-200 text-sm font-medium">Course</p>
-                              <p className="text-white font-semibold">{studentInfo.course}</p>
+                            <div className="student-info-card bg-white bg-opacity-15 backdrop-blur-sm px-3 lg:px-4 py-2 lg:py-3 rounded-lg border border-white border-opacity-20">
+                              <p className="text-purple-200 text-xs lg:text-sm font-medium">Course</p>
+                              <p className="text-white font-semibold text-xs lg:text-sm">{studentInfo.course}</p>
                             </div>
                           )}
                         </div>
@@ -655,24 +655,26 @@ const Studentdash = () => {
                     </div>
                     
                     {/* Right Content - Illustration */}
-                    <div className="lg:w-1/3 flex justify-center">
+                    <div className="student-hero-illustration lg:w-1/3 flex justify-center mt-6 lg:mt-0">
                       <div className="relative">
                         {/* Main Circle */}
-                        <div className="w-64 h-64 bg-gradient-to-br from-white to-purple-100 rounded-full flex items-center justify-center shadow-2xl">
-                          <div className="w-48 h-48 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
-                            <FaGraduationCap className="text-6xl text-white" />
+                        <div className="w-48 h-48 lg:w-64 lg:h-64 bg-gradient-to-br from-white to-purple-100 rounded-full flex items-center justify-center shadow-xl lg:shadow-2xl">
+                          <div className="w-36 h-36 lg:w-48 lg:h-48 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                            <FaGraduationCap className="text-4xl lg:text-6xl text-white" />
                           </div>
                         </div>
                         
                         {/* Floating Elements */}
-                        <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-bounce">
-                          <FaStar className="text-2xl text-white" />
+                        <div className="student-floating-elements">
+                          <div className="floating-element large absolute -top-2 lg:-top-4 -right-2 lg:-right-4 w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-bounce">
+                            <FaStar className="text-lg lg:text-2xl text-white" />
+                          </div>
+                          <div className="floating-element medium absolute -bottom-2 lg:-bottom-4 -left-2 lg:-left-4 w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center animate-pulse">
+                            <FaEdit className="text-sm lg:text-xl text-white" />
+                          </div>
+                          <div className="floating-element absolute top-1/2 -left-6 lg:-left-8 w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-r from-pink-400 to-red-500 rounded-full animate-ping"></div>
+                          <div className="floating-element absolute top-6 lg:top-8 right-6 lg:right-8 w-4 h-4 lg:w-6 lg:h-6 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse"></div>
                         </div>
-                        <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center animate-pulse">
-                          <FaEdit className="text-xl text-white" />
-                        </div>
-                        <div className="absolute top-1/2 -left-8 w-8 h-8 bg-gradient-to-r from-pink-400 to-red-500 rounded-full animate-ping"></div>
-                        <div className="absolute top-8 right-8 w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse"></div>
                       </div>
                     </div>
                   </div>
@@ -680,27 +682,27 @@ const Studentdash = () => {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+              <div className="student-stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+                <div className="student-stat-card bg-white rounded-xl shadow-lg p-4 lg:p-6 border-l-4 border-purple-500">
                   <div className="flex items-center">
-                    <div className="p-3 bg-purple-100 rounded-full">
-                      <FaStar className="text-2xl text-purple-600" />
+                    <div className="p-2 lg:p-3 bg-purple-100 rounded-full">
+                      <FaStar className="text-lg lg:text-2xl text-purple-600" />
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm text-gray-600">Reviews Submitted</p>
-                      <p className="text-2xl font-bold text-gray-800">{reviews.length}</p>
+                    <div className="ml-3 lg:ml-4">
+                      <p className="text-xs lg:text-sm text-gray-600">Reviews Submitted</p>
+                      <p className="text-xl lg:text-2xl font-bold text-gray-800">{reviews.length}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div className="student-stat-card bg-white rounded-xl shadow-lg p-4 lg:p-6 border-l-4 border-blue-500">
                   <div className="flex items-center">
-                    <div className="p-3 bg-blue-100 rounded-full">
-                      <FaUser className="text-2xl text-blue-600" />
+                    <div className="p-2 lg:p-3 bg-blue-100 rounded-full">
+                      <FaUser className="text-lg lg:text-2xl text-blue-600" />
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm text-gray-600">Profile Completion</p>
-                      <p className="text-2xl font-bold text-gray-800">
+                    <div className="ml-3 lg:ml-4">
+                      <p className="text-xs lg:text-sm text-gray-600">Profile Completion</p>
+                      <p className="text-xl lg:text-2xl font-bold text-gray-800">
                         {studentInfo?.profileCompleteness || 
                          (studentInfo ? Math.round(Object.values(studentInfo).filter(v => v && v !== '').length / 12 * 100) : 0)}%
                       </p>
@@ -708,14 +710,14 @@ const Studentdash = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <div className="student-stat-card bg-white rounded-xl shadow-lg p-4 lg:p-6 border-l-4 border-green-500">
                   <div className="flex items-center">
-                    <div className="p-3 bg-green-100 rounded-full">
-                      <FaGraduationCap className="text-2xl text-green-600" />
+                    <div className="p-2 lg:p-3 bg-green-100 rounded-full">
+                      <FaGraduationCap className="text-lg lg:text-2xl text-green-600" />
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm text-gray-600">Current Semester</p>
-                      <p className="text-2xl font-bold text-gray-800">
+                    <div className="ml-3 lg:ml-4">
+                      <p className="text-xs lg:text-sm text-gray-600">Current Semester</p>
+                      <p className="text-xl lg:text-2xl font-bold text-gray-800">
                         {studentInfo?.semester ? `${studentInfo.semester}` : 'Not Set'}
                       </p>
                     </div>
@@ -724,80 +726,87 @@ const Studentdash = () => {
               </div>
 
               {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h3>
+              <div className="student-quick-actions grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
+                <div className="bg-white rounded-xl shadow-lg p-4 lg:p-6">
+                  <h3 className="student-section-title text-lg lg:text-xl font-semibold text-gray-800 mb-4">Quick Actions</h3>
                   <div className="space-y-3">
                     <Link 
                       to="/reviewform"
-                      onClick={() => setSidebarOpen(false)} // Auto close drawer
-                      className="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                      onClick={() => setSidebarOpen(false)}
+                      className="student-action-btn flex items-center p-3 lg:p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
                     >
-                      <FaPlus className="text-purple-600 mr-3" />
-                      <span className="text-gray-700">Submit New Review</span>
+                      <FaPlus className="text-purple-600 mr-3 flex-shrink-0" />
+                      <span className="text-gray-700 text-sm lg:text-base">Submit New Review</span>
                     </Link>
                     <Link 
                       to="/calendar"
-                      onClick={() => setSidebarOpen(false)} // Auto close drawer
-                      className="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                      onClick={() => setSidebarOpen(false)}
+                      className="student-action-btn flex items-center p-3 lg:p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
                     >
-                      <FaCalendar className="text-green-600 mr-3" />
-                      <span className="text-gray-700">Academic Calendar</span>
+                      <FaCalendar className="text-green-600 mr-3 flex-shrink-0" />
+                      <span className="text-gray-700 text-sm lg:text-base">Academic Calendar</span>
                     </Link>
                     <button
                       onClick={() => {
                         handleTabChange('my-reviews');
-                        setSidebarOpen(false); // Auto close drawer
+                        setSidebarOpen(false);
                       }}
-                      className="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors w-full text-left"
+                      className="student-action-btn flex items-center p-3 lg:p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors w-full text-left"
                     >
-                      <FaStar className="text-blue-600 mr-3" />
-                      <span className="text-gray-700">View My Reviews</span>
+                      <FaStar className="text-blue-600 mr-3 flex-shrink-0" />
+                      <span className="text-gray-700 text-sm lg:text-base">View My Reviews</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h3>
+                <div className="bg-white rounded-xl shadow-lg p-4 lg:p-6">
+                  <h3 className="student-section-title text-lg lg:text-xl font-semibold text-gray-800 mb-4">Recent Activity</h3>
                   <div className="space-y-4">
                     {reviews.slice(0, 3).map((review) => (
                       <div key={review._id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                          <FaStar className="text-purple-600 text-sm" />
+                        <div className="w-6 h-6 lg:w-8 lg:h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <FaStar className="text-purple-600 text-xs lg:text-sm" />
                         </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-800">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs lg:text-sm font-medium text-gray-800 truncate">
                             Reviewed {review.teacherName}
                           </p>
                           <p className="text-xs text-gray-600">
                             {new Date(review.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-1 flex-shrink-0">
                           {renderStars(review.overallEvaluation)}
                         </div>
                       </div>
                     ))}
+                    {reviews.length === 0 && (
+                      <div className="text-center py-4">
+                        <p className="text-gray-500 text-sm">No recent activity</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Calendar Section */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Academic Calendar</h3>
-                <CalendarContent />
+              <div className="bg-white rounded-xl shadow-lg p-4 lg:p-6">
+                <h3 className="student-section-title text-lg lg:text-xl font-semibold text-gray-800 mb-4">Academic Calendar</h3>
+                <div className="student-calendar">
+                  <CalendarContent />
+                </div>
               </div>
-            </>
+            </div>
           )}
 
           {activeTab === 'my-reviews' && (
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">My Reviews</h2>
-                <div className="flex space-x-2">
+            <div className="student-fade-in bg-white rounded-xl shadow-lg p-4 lg:p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 lg:mb-6 gap-3">
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-800">My Reviews</h2>
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
                   <button
                     onClick={refreshReviews}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
+                    className="student-action-btn bg-blue-500 text-white px-3 lg:px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2 text-sm lg:text-base"
                     disabled={loading}
                   >
                     <FaSync className={loading ? 'animate-spin' : ''} />
@@ -805,8 +814,8 @@ const Studentdash = () => {
                   </button>
                   <Link 
                     to="/reviewform"
-                    onClick={() => setSidebarOpen(false)} // Auto close drawer
-                    className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors flex items-center space-x-2"
+                    onClick={() => setSidebarOpen(false)}
+                    className="student-action-btn bg-purple-500 text-white px-3 lg:px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors flex items-center justify-center space-x-2 text-sm lg:text-base"
                   >
                     <FaPlus />
                     <span>New Review</span>
@@ -816,8 +825,8 @@ const Studentdash = () => {
               
               {loading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">Loading reviews...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 lg:h-12 lg:w-12 border-b-2 border-purple-500 mx-auto"></div>
+                  <p className="mt-2 text-gray-600 text-sm lg:text-base">Loading reviews...</p>
                 </div>
               ) : reviews.length > 0 ? (
                 <div className="space-y-4">
@@ -826,48 +835,48 @@ const Studentdash = () => {
                     const performanceText = getPerformanceText(review.overallEvaluation);
                     
                     return (
-                      <div key={review._id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="font-semibold text-gray-800 text-lg">{review.teacherName}</h3>
-                            <p className="text-sm text-gray-600">{review.teacherDepartment} • {review.teacherSubject}</p>
+                      <div key={review._id} className="student-review-card border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
+                        <div className="flex flex-col lg:flex-row justify-between items-start mb-4 gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-800 text-base lg:text-lg truncate">{review.teacherName}</h3>
+                            <p className="text-sm text-gray-600 truncate">{review.teacherDepartment} • {review.teacherSubject}</p>
                             <p className="text-sm text-gray-600">Submitted on {new Date(review.createdAt).toLocaleDateString()}</p>
                           </div>
-                          <div className="text-right">
-                            <div className="flex items-center text-yellow-500 mb-2">
+                          <div className="text-center lg:text-right flex-shrink-0">
+                            <div className="flex items-center justify-center lg:justify-end text-yellow-500 mb-2">
                               {renderStars(review.overallEvaluation)}
-                              <span className="ml-2 font-semibold">{review.overallEvaluation}</span>
+                              <span className="ml-2 font-semibold text-sm lg:text-base">{review.overallEvaluation}</span>
                             </div>
-                            <span className={`text-sm font-medium ${performanceColor}`}>
+                            <span className={`text-xs lg:text-sm font-medium ${performanceColor}`}>
                               {performanceText}
                             </span>
                           </div>
                         </div>
                         {review.suggestions && (
-                          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                          <div className="bg-gray-50 p-3 lg:p-4 rounded-lg mb-4">
                             <p className="text-sm text-gray-700">
                               <span className="font-medium">Suggestions:</span> {review.suggestions}
                             </p>
                           </div>
                         )}
-                        <div className="mt-4 flex space-x-2">
+                        <div className="student-review-actions mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                           <button 
                             onClick={() => handleEditReview(review)}
-                            className="flex items-center space-x-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
+                            className="student-review-action-btn flex items-center justify-center space-x-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors text-sm"
                           >
                             <FaEdit />
                             <span>Edit Review</span>
                           </button>
                           <button 
                             onClick={() => handleDeleteReview(review._id)}
-                            className="flex items-center space-x-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                            className="student-review-action-btn flex items-center justify-center space-x-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors text-sm"
                           >
                             <FaTrash />
                             <span>Delete Review</span>
                           </button>
                           <button 
                             onClick={() => handleViewDetails(review)}
-                            className="flex items-center space-x-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                            className="student-review-action-btn flex items-center justify-center space-x-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm"
                           >
                             <FaEye />
                             <span>View Details</span>
@@ -879,15 +888,15 @@ const Studentdash = () => {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <FaStar className="text-6xl text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 text-lg mb-2">No reviews yet</p>
+                  <FaStar className="text-4xl lg:text-6xl text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 text-base lg:text-lg mb-2">No reviews yet</p>
                   <p className="text-gray-400 text-sm mb-4">
                     Start contributing to faculty improvement by submitting your first review.
                   </p>
                   <Link 
                     to="/reviewform"
-                    onClick={() => setSidebarOpen(false)} // Auto close drawer
-                    className="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors inline-flex items-center space-x-2"
+                    onClick={() => setSidebarOpen(false)}
+                    className="student-btn bg-purple-500 text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg hover:bg-purple-600 transition-colors inline-flex items-center space-x-2 text-sm lg:text-base"
                   >
                     <FaPlus />
                     <span>Submit Your First Review</span>
@@ -899,22 +908,22 @@ const Studentdash = () => {
 
           {/* Profile Section */}
           {activeTab === 'profile' && (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="student-fade-in bg-white rounded-xl shadow-lg overflow-hidden">
               {/* Profile Header */}
-              <div className="bg-gradient-to-r from-purple-500 to-purple-700 p-8 text-white">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mr-6">
-                      <FaUser className="text-4xl text-purple-600" />
+              <div className="student-profile-header bg-gradient-to-r from-purple-500 to-purple-700 p-4 lg:p-8 text-white">
+                <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-4">
+                  <div className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left">
+                    <div className="student-profile-avatar w-16 h-16 lg:w-24 lg:h-24 bg-white rounded-full flex items-center justify-center mb-4 lg:mb-0 lg:mr-6">
+                      <FaUser className="text-2xl lg:text-4xl text-purple-600" />
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold">{studentInfo?.username || 'Student'}</h2>
-                      <p className="text-purple-200 capitalize">{studentInfo?.role || 'Student'}</p>
+                    <div className="student-profile-info">
+                      <h2 className="text-xl lg:text-2xl font-bold">{studentInfo?.username || 'Student'}</h2>
+                      <p className="text-purple-200 capitalize text-sm lg:text-base">{studentInfo?.role || 'Student'}</p>
                       {studentInfo?.department && (
-                        <p className="text-purple-200">{studentInfo.department}</p>
+                        <p className="text-purple-200 text-sm lg:text-base">{studentInfo.department}</p>
                       )}
                       {studentInfo?.profileCompleteness !== undefined && (
-                        <p className="text-purple-200 text-sm">
+                        <p className="text-purple-200 text-xs lg:text-sm">
                           Profile Completeness: {studentInfo.profileCompleteness}%
                         </p>
                       )}
@@ -922,7 +931,7 @@ const Studentdash = () => {
                   </div>
                   <button
                     onClick={() => setIsEditingProfile(!isEditingProfile)}
-                    className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                    className="student-action-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-3 lg:px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 text-sm lg:text-base"
                     disabled={profileLoading}
                   >
                     <FaEdit />
@@ -932,10 +941,10 @@ const Studentdash = () => {
               </div>
 
               {/* Profile Content */}
-              <div className="p-8">
+              <div className="p-4 lg:p-8">
                 {profileLoading && (
                   <div className="flex justify-center items-center py-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 lg:h-12 lg:w-12 border-b-2 border-purple-500"></div>
                   </div>
                 )}
 
@@ -943,18 +952,18 @@ const Studentdash = () => {
                   <>
                     {/* Legacy Account Notice */}
                     {studentInfo?.isLegacyAccount && studentInfo?.needsProfileCompletion && (
-                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6 mb-6">
+                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 lg:p-6 mb-4 lg:mb-6">
                         <div className="flex items-start">
                           <div className="flex-shrink-0">
-                            <svg className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-5 w-5 lg:h-6 lg:w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
                           <div className="ml-3">
-                            <h3 className="text-lg font-medium text-blue-800">
+                            <h3 className="text-base lg:text-lg font-medium text-blue-800">
                               🎉 Welcome Back to the Enhanced System!
                             </h3>
-                            <div className="mt-2 text-sm text-blue-700">
+                            <div className="mt-2 text-xs lg:text-sm text-blue-700">
                               <p className="mb-2">
                                 We've upgraded our system with new features! To continue enjoying all functionalities, 
                                 please complete your academic profile below.
@@ -977,10 +986,10 @@ const Studentdash = () => {
 
                     {/* Important Notice for Editing */}
                     {isEditingProfile && (
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 lg:p-4 mb-4 lg:mb-6">
                         <div className="flex items-start">
                           <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                            <svg className="h-4 w-4 lg:h-5 lg:w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
                           </div>
@@ -988,7 +997,7 @@ const Studentdash = () => {
                             <h3 className="text-sm font-medium text-yellow-800">
                               Important Notice
                             </h3>
-                            <div className="mt-2 text-sm text-yellow-700">
+                            <div className="mt-2 text-xs lg:text-sm text-yellow-700">
                               <ul className="list-disc list-inside space-y-1">
                                 <li>Email, Admission Number, and Roll Number must be unique</li>
                                 <li>Changing email may require verification</li>
@@ -1006,35 +1015,35 @@ const Studentdash = () => {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="student-profile-grid grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                       {/* Academic Information */}
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 flex items-center">
+                        <h3 className="student-section-title text-base lg:text-lg font-semibold text-gray-800 mb-4 border-b pb-2 flex items-center">
                           📚 Academic Information
                           {isEditingProfile && <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Editable</span>}
                         </h3>
                       
                       {/* Username */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Username</label>
                         <input
                           type="text"
                           value={isEditingProfile ? (editFormData.username || '') : (studentInfo?.username || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, username: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
                         />
                       </div>
 
                       {/* Email */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Email</label>
                         <input
                           type="email"
                           value={isEditingProfile ? (editFormData.email || '') : (studentInfo?.email || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, email: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
                           placeholder="Enter your email address"
                         />
                         {isEditingProfile && (
@@ -1043,8 +1052,8 @@ const Studentdash = () => {
                       </div>
 
                       {/* Admission Number */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">
                           Admission Number
                           {studentInfo?.isLegacyAccount && (studentInfo?.admissionNo?.startsWith('TEMP') || studentInfo?.admissionNo?.startsWith('T')) && (
                             <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
@@ -1057,7 +1066,7 @@ const Studentdash = () => {
                           value={isEditingProfile ? (editFormData.admissionNo || '') : (studentInfo?.admissionNo || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, admissionNo: e.target.value.toUpperCase()})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'} ${(studentInfo?.admissionNo?.startsWith('TEMP') || studentInfo?.admissionNo?.startsWith('T')) ? 'bg-orange-50 border-orange-200' : ''}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'} ${(studentInfo?.admissionNo?.startsWith('TEMP') || studentInfo?.admissionNo?.startsWith('T')) ? 'bg-orange-50 border-orange-200' : ''}`}
                           placeholder="Enter your admission number"
                           maxLength="15"
                         />
@@ -1071,8 +1080,8 @@ const Studentdash = () => {
                       </div>
 
                       {/* University Roll Number */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">
                           University Roll Number
                           {studentInfo?.isLegacyAccount && /^\d{13,}$/.test(studentInfo?.universityRollNo) && (
                             <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
@@ -1085,7 +1094,7 @@ const Studentdash = () => {
                           value={isEditingProfile ? (editFormData.universityRollNo || '') : (studentInfo?.universityRollNo || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, universityRollNo: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'} ${/^\d{13,}$/.test(studentInfo?.universityRollNo) ? 'bg-orange-50 border-orange-200' : ''}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'} ${/^\d{13,}$/.test(studentInfo?.universityRollNo) ? 'bg-orange-50 border-orange-200' : ''}`}
                           placeholder="Enter your university roll number (digits only)"
                           maxLength="25"
                           pattern="\d*"
@@ -1100,13 +1109,13 @@ const Studentdash = () => {
                       </div>
 
                       {/* Semester */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Current Semester</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Current Semester</label>
                         {isEditingProfile ? (
                           <select
                             value={editFormData.semester || ''}
                             onChange={(e) => setEditFormData({...editFormData, semester: e.target.value})}
-                            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
+                            className="student-form-select w-full p-2 lg:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 text-sm lg:text-base"
                           >
                             <option value="">Select Semester</option>
                             {['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'].map(sem => (
@@ -1118,19 +1127,19 @@ const Studentdash = () => {
                             type="text"
                             value={studentInfo?.semester ? `${studentInfo.semester} Semester` : ''}
                             readOnly
-                            className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50"
+                            className="student-form-input w-full p-2 lg:p-3 rounded-lg border border-gray-200 bg-gray-50 text-sm lg:text-base"
                           />
                         )}
                       </div>
 
                       {/* Section */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Section</label>
                         {isEditingProfile ? (
                           <select
                             value={editFormData.section || ''}
                             onChange={(e) => setEditFormData({...editFormData, section: e.target.value})}
-                            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
+                            className="student-form-select w-full p-2 lg:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 text-sm lg:text-base"
                           >
                             <option value="">Select Section</option>
                             {['Section A', 'Section B', 'Section C', 'Section D', 'Section E', 'Super60', 'Uniques'].map(sec => (
@@ -1142,7 +1151,7 @@ const Studentdash = () => {
                             type="text"
                             value={studentInfo?.section || ''}
                             readOnly
-                            className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50"
+                            className="student-form-input w-full p-2 lg:p-3 rounded-lg border border-gray-200 bg-gray-50 text-sm lg:text-base"
                           />
                         )}
                       </div>
@@ -1150,57 +1159,57 @@ const Studentdash = () => {
 
                     {/* Personal Information */}
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 flex items-center">
+                      <h3 className="student-section-title text-base lg:text-lg font-semibold text-gray-800 mb-4 border-b pb-2 flex items-center">
                         👤 Personal Information
                         {isEditingProfile && <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Editable</span>}
                       </h3>
 
                       {/* Full Name */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Full Name</label>
                         <input
                           type="text"
                           value={isEditingProfile ? (editFormData.fullName || '') : (studentInfo?.fullName || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, fullName: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
                           placeholder="Enter your full name"
                         />
                       </div>
 
                       {/* Date of Birth */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                         <input
                           type="date"
                           value={isEditingProfile ? (editFormData.dateOfBirth ? editFormData.dateOfBirth.split('T')[0] : '') : (studentInfo?.dateOfBirth ? studentInfo.dateOfBirth.split('T')[0] : '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, dateOfBirth: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
                         />
                       </div>
 
                       {/* Phone Number */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                         <input
                           type="tel"
                           value={isEditingProfile ? (editFormData.phoneNumber || '') : (studentInfo?.phoneNumber || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, phoneNumber: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
                           placeholder="Enter your phone number"
                         />
                       </div>
 
                       {/* Department */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Department</label>
                         {isEditingProfile ? (
                           <select
                             value={editFormData.department || ''}
                             onChange={(e) => setEditFormData({...editFormData, department: e.target.value})}
-                            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
+                            className="student-form-select w-full p-2 lg:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 text-sm lg:text-base"
                           >
                             <option value="">Select Department</option>
                             {['Computer Science', 'Information Technology', 'Electronics & Communication', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering', 'Chemical Engineering', 'Biotechnology', 'Mathematics', 'Physics', 'Chemistry', 'English', 'Economics', 'Management'].map(dept => (
@@ -1212,19 +1221,19 @@ const Studentdash = () => {
                             type="text"
                             value={studentInfo?.department || ''}
                             readOnly
-                            className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50"
+                            className="student-form-input w-full p-2 lg:p-3 rounded-lg border border-gray-200 bg-gray-50 text-sm lg:text-base"
                           />
                         )}
                       </div>
 
                       {/* Course */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Course</label>
                         {isEditingProfile ? (
                           <select
                             value={editFormData.course || ''}
                             onChange={(e) => setEditFormData({...editFormData, course: e.target.value})}
-                            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
+                            className="student-form-select w-full p-2 lg:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 text-sm lg:text-base"
                           >
                             <option value="">Select Course</option>
                             {['B.Tech', 'B.E', 'B.Sc', 'B.A', 'B.Com', 'M.Tech', 'M.E', 'M.Sc', 'M.A', 'M.Com', 'MBA', 'MCA', 'PhD', 'Other'].map(course => (
@@ -1236,20 +1245,20 @@ const Studentdash = () => {
                             type="text"
                             value={studentInfo?.course || ''}
                             readOnly
-                            className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50"
+                            className="student-form-input w-full p-2 lg:p-3 rounded-lg border border-gray-200 bg-gray-50 text-sm lg:text-base"
                           />
                         )}
                       </div>
 
                       {/* Batch */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Batch</label>
+                      <div className="student-form-field">
+                        <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Batch</label>
                         <input
                           type="text"
                           value={isEditingProfile ? (editFormData.batch || '') : (studentInfo?.batch || '')}
                           onChange={(e) => isEditingProfile && setEditFormData({...editFormData, batch: e.target.value})}
                           readOnly={!isEditingProfile}
-                          className={`w-full p-3 rounded-lg border ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
+                          className={`student-form-input w-full p-2 lg:p-3 rounded-lg border text-sm lg:text-base ${isEditingProfile ? 'border-gray-300 focus:ring-2 focus:ring-purple-500' : 'border-gray-200 bg-gray-50'}`}
                           placeholder="e.g., 2020-2024"
                         />
                       </div>
@@ -1258,25 +1267,25 @@ const Studentdash = () => {
 
                 {/* Save/Cancel Buttons */}
                 {isEditingProfile && (
-                  <div className="mt-8 flex space-x-4 justify-end">
+                  <div className="student-form-buttons mt-6 lg:mt-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-end">
                     <button
                       onClick={() => {
                         setIsEditingProfile(false);
                         setEditFormData(studentInfo || {});
                       }}
-                      className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                      className="student-btn px-4 lg:px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm lg:text-base"
                       disabled={profileLoading}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => updateStudentProfile(editFormData)}
-                      className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex items-center space-x-2"
+                      className="student-btn px-4 lg:px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex items-center justify-center space-x-2 text-sm lg:text-base"
                       disabled={profileLoading}
                     >
                       {profileLoading ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <div className="animate-spin rounded-full h-3 w-3 lg:h-4 lg:w-4 border-b-2 border-white"></div>
                           <span>Saving...</span>
                         </>
                       ) : (
@@ -1299,49 +1308,49 @@ const Studentdash = () => {
 
       {/* Edit Review Modal */}
       {showEditModal && editingReview && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="student-modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="student-modal student-modal-content bg-white rounded-lg p-4 lg:p-6 max-w-md w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Edit Review</h3>
+              <h3 className="text-base lg:text-lg font-semibold">Edit Review</h3>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="student-touch-target text-gray-500 hover:text-gray-700 p-1"
               >
                 <FaTimes />
               </button>
             </div>
             <div className="mb-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-xs lg:text-sm text-gray-600 mb-2">
                 <strong>Faculty:</strong> {editingReview.teacherName}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs lg:text-sm text-gray-600">
                 <strong>Subject:</strong> {editingReview.teacherSubject}
               </p>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs lg:text-sm font-medium text-gray-700 mb-2">
                 Suggestions
               </label>
               <textarea
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="student-form-textarea w-full p-2 lg:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm lg:text-base"
                 rows="4"
                 defaultValue={editingReview.suggestions}
                 placeholder="Update your suggestions..."
               />
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                className="student-btn flex-1 px-3 lg:px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm lg:text-base"
               >
                 Cancel
               </button>
               <Link
                 to={`/reviewform?edit=${editingReview._id}`}
-                className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-center"
+                className="student-btn flex-1 px-3 lg:px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-center text-sm lg:text-base"
                 onClick={() => {
                   setShowEditModal(false);
-                  setSidebarOpen(false); // Auto close drawer
+                  setSidebarOpen(false);
                 }}
               >
                 Edit Full Review

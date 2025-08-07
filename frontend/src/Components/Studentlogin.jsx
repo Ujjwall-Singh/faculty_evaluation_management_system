@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import stdimg from "../Assets/stdimg.gif";
 import logo from "../Assets/logo.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { useAuth } from '../context/AuthContext';
 
 const Studentlogin = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ const Studentlogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,22 +26,30 @@ const Studentlogin = () => {
       });
 
       if (response.data.success) {
-        // Store complete student info in localStorage
-        localStorage.setItem('studentInfo', JSON.stringify({
+        // Use AuthContext login method
+        const studentData = {
           id: response.data.studentId,
           name: response.data.name,
           role: response.data.role,
-          ...response.data.student // Complete student data
-        }));
+          ...response.data.student
+        };
         
-        alert('Student login successful!');
-        navigate('/studentdash');
+        await login(studentData, 'student');
+        
+        // Navigate to student dashboard
+        navigate('/studentdash', { replace: true });
       } else {
         setError(response.data.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Please check your details!!');
+      if (err.response?.status === 401) {
+        setError('Invalid email or password');
+      } else if (err.response?.status === 500) {
+        setError('Server error. Please try again later');
+      } else {
+        setError('Network error. Please check your connection');
+      }
     } finally {
       setIsLoading(false);
     }

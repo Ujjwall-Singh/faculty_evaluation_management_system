@@ -11,8 +11,8 @@ export const testBackendConnection = async () => {
     
     // Test a specific API endpoint
     const adminTestResponse = await axiosInstance.post('/api/adminlogin', {
-      email: 'test@test.com',
-      password: 'test123'
+      email: 'ujjwal@gmail.com',
+      password: 'ujjwal123'
     });
     
     return {
@@ -45,9 +45,9 @@ export const testBackendConnection = async () => {
   }
 };
 
-// Call this function when app starts
-if (process.env.NODE_ENV === 'development') {
-  testBackendConnection().then(result => {
-    console.log('Backend connection test result:', result);
-  });
-}
+// Call this function when app starts - DISABLED for now to avoid errors
+// if (process.env.NODE_ENV === 'development') {
+//   testBackendConnection().then(result => {
+//     console.log('Backend connection test result:', result);
+//   });
+// }

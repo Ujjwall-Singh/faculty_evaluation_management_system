@@ -3,16 +3,20 @@ import adminimg from "../Assets/adminimg.gif";
 import logo from "../Assets/logo.png";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosConfig';
+import { useAuth } from '../context/AuthContext';
 
 const Adminlogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
 
     try {
       console.log('Attempting admin login...');
@@ -24,16 +28,20 @@ const Adminlogin = () => {
       console.log('Login response:', response.data);
 
       if (response.data.success) {
-        // Store admin info in localStorage
-        localStorage.setItem('adminInfo', JSON.stringify({
+        // Use AuthContext login method
+        const adminData = {
           id: response.data.adminId,
           name: response.data.name,
-          role: response.data.role
-        }));
-        alert('Admin login successful!');
-        navigate('/admindash');
+          role: response.data.role,
+          email: email
+        };
+        
+        await login(adminData, 'admin');
+        
+        // Navigate to admin dashboard
+        navigate('/admindash', { replace: true });
       } else {
-        alert(response.data.error || 'Login failed');
+        setError(response.data.error || 'Login failed');
       }
     } catch (error) {
       console.error('Admin login error:', error);
@@ -41,13 +49,15 @@ const Adminlogin = () => {
       
       if (error.code === 'ERR_NETWORK') {
         errorMessage = 'Cannot connect to server. Please check if backend is running.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Invalid email or password';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Server error. Please try again later';
       } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
       }
       
-      alert(errorMessage);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +88,11 @@ const Adminlogin = () => {
           <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
             <div className="mt-12 flex flex-col items-center">
               <h1 className="text-2xl xl:text-3xl font-bold">Admin Login</h1>
+              {error && (
+                <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded w-full max-w-xs">
+                  {error}
+                </div>
+              )}
               <div className="w-full flex-1 mt-8">
                 <div className="flex flex-col items-center">
                   <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-purple-200 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">

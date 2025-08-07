@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { FaEdit, FaTrash, FaEye, FaEnvelope, FaPhone, FaGraduationCap, FaStar, FaChartBar } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaEye, FaEnvelope, FaPhone, FaGraduationCap, FaStar, FaChartBar, FaTh, FaList } from 'react-icons/fa';
 
 const FacultyList = ({ faculty, reviews = [], onEdit, onDelete }) => {
   const [expandedFaculty, setExpandedFaculty] = useState(null);
+  const [viewMode, setViewMode] = useState('table'); // 'table' or 'card'
 
   const toggleExpanded = (facultyId) => {
     setExpandedFaculty(expandedFaculty === facultyId ? null : facultyId);
@@ -133,8 +134,28 @@ const FacultyList = ({ faculty, reviews = [], onEdit, onDelete }) => {
   return (
     <div className="faculty-list">
       <div className="list-header">
-        <h2>Faculty Members ({faculty.length})</h2>
-        <p>Manage and view all registered faculty members with their performance ratings</p>
+        <div className="header-content">
+          <div className="header-text">
+            <h2>Faculty Members ({faculty.length})</h2>
+            <p>Manage and view all registered faculty members with their performance ratings</p>
+          </div>
+          <div className="view-toggle-controls">
+            <button
+              className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+              title="Table View"
+            >
+              <FaList /> Table
+            </button>
+            <button
+              className={`view-toggle-btn ${viewMode === 'card' ? 'active' : ''}`}
+              onClick={() => setViewMode('card')}
+              title="Card View"
+            >
+              <FaTh /> Cards
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Debug Information - Remove in production */}
@@ -173,8 +194,9 @@ const FacultyList = ({ faculty, reviews = [], onEdit, onDelete }) => {
         </div>
       )}
 
-      <div className="faculty-grid">
-        {facultyWithRatings.map((facultyMember) => (
+      {/* Faculty Display - Card or Table View */}
+      {viewMode === 'card' ? (
+        <div className="faculty-grid">{facultyWithRatings.map((facultyMember) => (
           <div key={facultyMember._id} className="faculty-card">
             <div className="faculty-header">
               <div className="faculty-avatar">
@@ -290,11 +312,11 @@ const FacultyList = ({ faculty, reviews = [], onEdit, onDelete }) => {
             )}
           </div>
         ))}
-      </div>
-
-      {/* Table View for larger screens */}
-      <div className="faculty-table-container">
-        <table className="faculty-table">
+        </div>
+      ) : (
+        /* Table View */
+        <div className="faculty-table-container">
+          <table className="faculty-table">{/* Table View */}
           <thead>
             <tr>
               <th>Name</th>
@@ -363,7 +385,8 @@ const FacultyList = ({ faculty, reviews = [], onEdit, onDelete }) => {
             ))}
           </tbody>
         </table>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

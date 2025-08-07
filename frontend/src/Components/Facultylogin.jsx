@@ -4,6 +4,7 @@ import facultyimg from "../Assets/facultyimg.gif";
 import logo from "../Assets/logo.png";
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import { useAuth } from '../context/AuthContext';
 
 const Facultylogin = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const Facultylogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,20 +26,29 @@ const Facultylogin = () => {
       });
 
       if (response.data.success) {
-        // Store faculty info in localStorage
-        localStorage.setItem('facultyInfo', JSON.stringify({
+        // Use AuthContext login method
+        const facultyData = {
           id: response.data.facultyId,
           name: response.data.name,
           department: response.data.department,
-          role: response.data.role
-        }));
+          role: response.data.role,
+          email: email
+        };
         
-        alert('Faculty login successful!');
-        navigate('/facultydash');
+        await login(facultyData, 'faculty');
+        
+        // Navigate to faculty dashboard
+        navigate('/facultydash', { replace: true });
       }
     } catch (error) {
       console.error('Faculty login error:', error);
-      setError(error.response?.data?.error || 'Login failed. Please try again.');
+      if (error.response?.status === 401) {
+        setError('Invalid email or password');
+      } else if (error.response?.status === 500) {
+        setError('Server error. Please try again later');
+      } else {
+        setError(error.response?.data?.error || 'Network error. Please check your connection');
+      }
     } finally {
       setIsLoading(false);
     }

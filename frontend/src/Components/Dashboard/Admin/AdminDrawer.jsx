@@ -29,6 +29,7 @@ import {
   FaDesktop
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import logo from '../../../Assets/logo.png';
 import './AdminDrawer.css';
 
@@ -36,6 +37,7 @@ const AdminDrawer = ({ isOpen, onClose, onMenuSelect, activeMenu }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // Sample admin profile data
   useEffect(() => {
@@ -175,14 +177,28 @@ const AdminDrawer = ({ isOpen, onClose, onMenuSelect, activeMenu }) => {
     }
   };
 
-  const handleLogout = () => {
-    // Clear any stored authentication data
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
-    
-    // Navigate to home page
-    navigate('/');
-    onClose();
+  const handleLogout = async () => {
+    try {
+      console.log('Admin logout initiated...');
+      
+      // Use AuthContext logout method
+      await logout();
+      
+      // Close the drawer
+      onClose();
+      
+      // Navigate to home page
+      navigate('/', { replace: true });
+      
+      console.log('Admin logout completed');
+    } catch (error) {
+      console.error('Logout error:', error);
+      
+      // Fallback: Clear localStorage manually and redirect
+      localStorage.clear();
+      navigate('/', { replace: true });
+      onClose();
+    }
   };
 
   const menuStructure = [

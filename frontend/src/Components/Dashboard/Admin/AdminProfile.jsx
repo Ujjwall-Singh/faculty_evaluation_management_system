@@ -9,8 +9,10 @@ import {
   FaCog,
   FaSignOutAlt
 } from 'react-icons/fa';
+import { useAuth } from '../../../context/AuthContext';
 
 const AdminProfile = () => {
+  const { logout } = useAuth();
   const [adminData, setAdminData] = useState({
     username: '',
     email: '',
@@ -120,15 +122,21 @@ const AdminProfile = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Clear all admin session data
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminEmail');
-    localStorage.removeItem('adminUsername');
-    localStorage.removeItem('adminSettings');
-    
-    // Redirect to login
-    window.location.href = '/';
+  const handleLogout = async () => {
+    try {
+      console.log('Admin profile logout initiated...');
+      
+      // Use AuthContext logout method
+      await logout();
+      
+      console.log('Admin profile logout completed');
+    } catch (error) {
+      console.error('Logout error from AdminProfile:', error);
+      
+      // Fallback: Clear localStorage manually and redirect
+      localStorage.clear();
+      window.location.href = '/';
+    }
   };
 
   if (loading) {
