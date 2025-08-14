@@ -28,6 +28,7 @@
     "EMAIL_PORT": "587",
     "EMAIL_USER": "ujjwalkumar434345@gmail.com",
     "EMAIL_PASSWORD": "kpkf hlmj sxee abvb",
-    "EMAIL_APP_PASSWORD": "kpkf hlmj sxee abvb"
+    "EMAIL_APP_PASSWORD": "kpkf hlmj sxee abvb",
+    "FRONTEND_URL": "https://faculty-evaluation-management-syste-three.vercel.app"
   }
 }
