@@ -230,6 +230,9 @@ app.get('/', (req, res) => {
       '/api/login',
       '/api/signup',
       '/api/faculty',
+      '/api/student',
+      '/api/admin',
+      '/api/email-verification',
       '/api/review'
     ]
   });
@@ -244,6 +247,7 @@ app.use('/api/faculty', require('./routes/faculty'));
 app.use('/api/student', require('./routes/student'));
 app.use('/api/student-profile', require('./routes/studentProfile'));
 app.use('/api/admin', require('./routes/admin')); // Admin routes enabled
+app.use('/api/email-verification', require('./routes/emailVerification')); // Email verification routes
 
 // Error Handler
 app.use((err, req, res, next) => {

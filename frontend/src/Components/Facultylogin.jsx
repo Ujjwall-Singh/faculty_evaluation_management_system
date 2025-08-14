@@ -42,12 +42,21 @@ const Facultylogin = () => {
       }
     } catch (error) {
       console.error('Faculty login error:', error);
-      if (error.response?.status === 401) {
+      
+      // Display specific error message from backend
+      const errorMessage = error.response?.data?.message || error.response?.data?.error;
+      if (errorMessage) {
+        setError(errorMessage);
+      } else if (error.response?.status === 401) {
         setError('Invalid email or password');
+      } else if (error.response?.status === 403) {
+        setError('Access denied. Your account may not be approved or email not verified.');
+      } else if (error.response?.status === 423) {
+        setError('Account temporarily locked. Please try again later.');
       } else if (error.response?.status === 500) {
         setError('Server error. Please try again later');
       } else {
-        setError(error.response?.data?.error || 'Network error. Please check your connection');
+        setError('Network error. Please check your connection');
       }
     } finally {
       setIsLoading(false);

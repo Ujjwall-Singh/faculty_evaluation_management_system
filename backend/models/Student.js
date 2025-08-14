@@ -2,10 +2,24 @@ const mongoose = require('mongoose');
 
 const StudentSchema = new mongoose.Schema({
   // Authentication fields
-  email: { type: String, required: true, unique: true },
-  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  username: { type: String, required: true, trim: true },
   password: { type: String, required: true },
   role: { type: String, default: 'Student' },
+  
+  // Email Verification Fields
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationToken: {
+    type: String,
+    default: null
+  },
+  emailVerificationExpires: {
+    type: Date,
+    default: null
+  },
   
   // Academic Information
   admissionNo: { 
@@ -337,6 +351,50 @@ StudentSchema.methods.calculateProfileCompleteness = function() {
   return this.profileCompleteness;
 };
 
+// Method to check if student can login
+StudentSchema.methods.canLogin = function() {
+  return this.isEmailVerified && this.isActive && !this.isLocked;
+};
+
+// Method to verify email
+StudentSchema.methods.verifyEmail = function() {
+  this.isEmailVerified = true;
+  this.emailVerificationToken = null;
+  this.emailVerificationExpires = null;
+  this.updatedAt = new Date();
+  return this.save();
+};
+
+// Method to increment login attempts
+StudentSchema.methods.incLoginAttempts = function() {
+  // If we have a previous lock that has expired, restart at 1
+  if (this.lockUntil && this.lockUntil < Date.now()) {
+    return this.updateOne({
+      $unset: { lockUntil: 1 },
+      $set: { loginAttempts: 1 }
+    });
+  }
+  
+  const updates = { $inc: { loginAttempts: 1 } };
+  
+  // If we're at max attempts and not already locked, lock the account
+  if (this.loginAttempts + 1 >= 5 && !this.isLocked) {
+    updates.$set = {
+      lockUntil: Date.now() + 2 * 60 * 60 * 1000 // Lock for 2 hours
+    };
+  }
+  
+  return this.updateOne(updates);
+};
+
+// Method to reset login attempts
+StudentSchema.methods.resetLoginAttempts = function() {
+  return this.updateOne({
+    $unset: { loginAttempts: 1, lockUntil: 1 },
+    $set: { lastLogin: new Date() }
+  });
+};
+
 // Method to get student summary
 StudentSchema.methods.getSummary = function() {
   return {
@@ -349,6 +407,7 @@ StudentSchema.methods.getSummary = function() {
     department: this.department,
     course: this.course,
     email: this.email,
+    isEmailVerified: this.isEmailVerified,
     profileCompleteness: this.profileCompleteness,
     isActive: this.isActive
   };

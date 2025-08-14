@@ -1,5 +1,7 @@
 // API configuration with environment variable support
-let API_BASE_URL = process.env.REACT_APP_API_URL || 'https://faculty-evaluation-management-syste.vercel.app';
+let API_BASE_URL = process.env.REACT_APP_API_URL || 'https://faculty-evaluation-management-syste.vercel.app' || 'http://localhost:5000';
+// let API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 
 // Remove trailing slash if present to avoid double slash issues
 API_BASE_URL = API_BASE_URL.replace(/\/$/, '');

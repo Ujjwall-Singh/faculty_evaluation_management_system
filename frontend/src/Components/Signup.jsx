@@ -61,7 +61,7 @@ const Signup = () => {
     
     if (!name) newErrors.name = 'Name is required';
     if (!password) newErrors.password = 'Password is required';
-    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters long';
     
     if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
     
@@ -124,7 +124,13 @@ const Signup = () => {
       }
       
       const response = await axios.post(apiUrl, requestData);
-      alert(response.data.msg);
+      
+      // Handle different signup responses
+      if (role === 'Faculty' && response.data.status === 'pending') {
+        alert(response.data.msg + '\n\nNote: You will receive an email notification once your account is approved.');
+      } else {
+        alert(response.data.msg);
+      }
       
       // Clear form after successful signup
       setEmail('');
@@ -148,9 +154,12 @@ const Signup = () => {
       
       setErrors({});
     } catch (error) {
-      console.error(error);
+      console.error('Signup Error Full Details:', error);
+      console.error('Error Response:', error.response);
+      console.error('Error Response Data:', error.response?.data);
+      
       const errorMessage = error.response?.data?.error || error.response?.data?.details || "Failed to sign up";
-      alert(errorMessage);
+      alert('Signup failed: ' + errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -218,6 +227,11 @@ const Signup = () => {
                     disabled={isLoading}
                   />
                   {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                  {!errors.password && (
+                    <p className="text-gray-500 text-xs mt-1">
+                      Password must be at least 6 characters long
+                    </p>
+                  )}
                   
                   {/* Confirm Password */}
                   <input

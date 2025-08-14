@@ -20,6 +20,8 @@ import StudentListAdvanced from './StudentListAdvanced';
 import DashboardStats from './DashboardStats';
 import AdminProfile from './AdminProfile';
 import AdminSettings from './AdminSettings';
+import FacultyManagement from './FacultyManagement';
+import FacultyApprovalNotifications from './FacultyApprovalNotifications';
 import AddFacultyModal from './AddFacultyModal';
 import EditFacultyModal from './EditFacultyModal';
 import AddReviewModal from './AddReviewModal';
@@ -673,6 +675,19 @@ const AdminDashboard = () => {
           <h1>Admin Dashboard</h1>
         </div>
         <div className="header-actions">
+          {/* Faculty Approval Notifications */}
+          <FacultyApprovalNotifications 
+            onApprovalAction={(action, data) => {
+              if (action === 'view-all') {
+                setActiveTab('faculty-management');
+              } else if (action === 'view-details') {
+                setActiveTab('faculty-management');
+              }
+              // Refresh faculty data after approvals
+              fetchData();
+            }}
+          />
+          
           <button 
             onClick={() => setShowAddFaculty(true)} 
             className="btn btn-primary"
@@ -723,6 +738,12 @@ const AdminDashboard = () => {
           onClick={() => setActiveTab('faculty')}
         >
           <FaUsers /> Faculty ({activeTab === 'faculty' ? filteredFaculty.length : faculty.length})
+        </button>
+        <button 
+          className={`tab ${activeTab === 'faculty-management' ? 'active' : ''}`}
+          onClick={() => setActiveTab('faculty-management')}
+        >
+          <FaUsers /> Faculty Management
         </button>
         <button 
           className={`tab ${activeTab === 'students' ? 'active' : ''}`}
@@ -937,6 +958,10 @@ const AdminDashboard = () => {
 
         {activeTab === 'profile' && (
           <AdminProfile />
+        )}
+
+        {activeTab === 'faculty-management' && (
+          <FacultyManagement />
         )}
 
         {activeTab === 'settings' && (

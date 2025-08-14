@@ -3,6 +3,76 @@ const Faculty = require('../models/Faculty');
 const Review = require('../models/Review');
 const router = express.Router();
 
+// Get all faculty members with status filtering for admin
+router.get('/all', async (req, res) => {
+  try {
+    const faculty = await Faculty.find().sort({ createdAt: -1 });
+    res.json({ 
+      success: true, 
+      faculty: faculty,
+      count: faculty.length 
+    });
+  } catch (error) {
+    console.error('Error fetching all faculty:', error);
+    res.status(500).json({ error: 'Failed to fetch faculty' });
+  }
+});
+
+// Approve faculty member
+router.post('/approve/:id', async (req, res) => {
+  try {
+    const facultyId = req.params.id;
+    const faculty = await Faculty.findByIdAndUpdate(
+      facultyId,
+      { status: 'approved' },
+      { new: true }
+    );
+
+    if (!faculty) {
+      return res.status(404).json({ error: 'Faculty not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Faculty approved successfully',
+      faculty: faculty 
+    });
+  } catch (error) {
+    console.error('Error approving faculty:', error);
+    res.status(500).json({ error: 'Failed to approve faculty' });
+  }
+});
+
+// Reject faculty member
+router.post('/reject/:id', async (req, res) => {
+  try {
+    const facultyId = req.params.id;
+    const { reason } = req.body;
+    
+    const faculty = await Faculty.findByIdAndUpdate(
+      facultyId,
+      { 
+        status: 'rejected',
+        rejectionReason: reason 
+      },
+      { new: true }
+    );
+
+    if (!faculty) {
+      return res.status(404).json({ error: 'Faculty not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Faculty rejected successfully',
+      faculty: faculty 
+    });
+  } catch (error) {
+    console.error('Error rejecting faculty:', error);
+    res.status(500).json({ error: 'Failed to reject faculty' });
+  }
+});
+
 // Get all faculty members
 router.get('/', async (req, res) => {
   try {

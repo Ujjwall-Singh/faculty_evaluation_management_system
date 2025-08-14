@@ -1,12 +1,20 @@
 // routes/signup.js
 const express = require('express');
-const bcrypt = require('bcryptjs'); // Use bcryptjs consistently
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const router = express.Router();
 const Faculty = require('../models/Faculty');
 const Student = require('../models/Student');
+const EmailVerification = require('../models/EmailVerification');
+const ValidationService = require('../utils/validationService');
+const emailService = require('../utils/emailService');
 
 router.post('/', async (req, res) => {
+  console.log('\n=== SIGNUP REQUEST START ===');
+  console.log('Full request body:', JSON.stringify(req.body, null, 2));
+  console.log('Request headers:', req.headers);
+  
   const { 
     email, 
     name, 
@@ -31,6 +39,7 @@ router.post('/', async (req, res) => {
   console.log('Signup request received:', { 
     email, 
     name, 
+    password: password ? 'provided' : 'MISSING',
     role, 
     department, 
     subject, 
@@ -60,16 +69,40 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    // Validate required fields based on role
+    // Enhanced validation using ValidationService
+    const validation = ValidationService.validateRegistration({
+      email,
+      name: name,
+      password,
+      phone: phone || phoneNumber,
+      admissionNo,
+      universityRollNo
+    }, role);
+
+    if (!validation.isValid) {
+      console.log('Validation failed:', validation.errors);
+      return res.status(400).json({ 
+        error: 'Validation failed',
+        details: validation.errors
+      });
+    }
+
+    console.log('Validation passed successfully');
+
+    // Use validated data
+    const validatedEmail = validation.validatedData.email;
+    const validatedName = validation.validatedData.name;
+
+    // Role-specific validation
     if (role === 'Faculty') {
-      if (!email || !name || !password || !department || !subject || !phone) {
+      if (!validatedEmail || !validatedName || !password || !department || !subject || !phone) {
         console.log('Faculty validation failed - missing fields');
         return res.status(400).json({ 
           error: 'All fields are required for faculty signup: email, name, password, department, subject, phone' 
         });
       }
     } else if (role === 'Student') {
-      if (!email || !name || !password || !admissionNo || !universityRollNo || !semester || !section) {
+      if (!validatedEmail || !validatedName || !password || !admissionNo || !universityRollNo || !semester || !section) {
         console.log('Student validation failed - missing fields');
         return res.status(400).json({ 
           error: 'Required fields for student signup: email, name, password, admission number, university roll number, semester, section' 
@@ -77,18 +110,6 @@ router.post('/', async (req, res) => {
       }
 
       // Additional validation for student-specific fields
-      if (admissionNo && !/^[A-Z0-9]{8,15}$/.test(admissionNo)) {
-        return res.status(400).json({
-          error: 'Admission number must be 8-15 alphanumeric characters'
-        });
-      }
-
-      if (universityRollNo && !/^\d{6,25}$/.test(universityRollNo)) {
-        return res.status(400).json({
-          error: 'University roll number must be 6-25 digits'
-        });
-      }
-
       if (!['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'].includes(semester)) {
         return res.status(400).json({
           error: 'Semester must be between 1st and 8th'
@@ -102,7 +123,7 @@ router.post('/', async (req, res) => {
       }
 
       // Check for duplicate admission number and university roll number
-      const existingAdmissionNo = await Student.findOne({ admissionNo });
+      const existingAdmissionNo = await Student.findOne({ admissionNo: admissionNo.toUpperCase() });
       if (existingAdmissionNo) {
         return res.status(400).json({
           error: 'Admission number already exists'
@@ -118,11 +139,10 @@ router.post('/', async (req, res) => {
     }
 
     // Check for existing email
-    const existingEmail = role === 'Faculty' 
-      ? await Faculty.findOne({ email })
-      : await Student.findOne({ email });
+    const existingEmailFaculty = await Faculty.findOne({ email: validatedEmail });
+    const existingEmailStudent = await Student.findOne({ email: validatedEmail });
     
-    if (existingEmail) {
+    if (existingEmailFaculty || existingEmailStudent) {
       return res.status(400).json({
         error: 'Email already registered'
       });
@@ -130,61 +150,136 @@ router.post('/', async (req, res) => {
 
     console.log('Validation passed, hashing password...');
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12); // Increased rounds for better security
     console.log('Password hashed successfully');
+
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationCode = EmailVerification.generateVerificationCode();
+
+    let newUser;
+    let userType = role;
 
     if (role === 'Faculty') {
       console.log('Creating faculty record...');
-      const newFaculty = new Faculty({
-        email,
-        name,
+      newUser = new Faculty({
+        email: validatedEmail,
+        name: validatedName,
         department,
         subject,
-        phone,
+        phone: validation.validatedData.phone || phone,
         password: hashedPassword,
         role,
+        isEmailVerified: false,
+        emailVerificationToken: verificationToken,
+        emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
       });
-      await newFaculty.save();
+      await newUser.save();
       console.log('Faculty saved successfully');
-      res.json({ msg: 'Faculty signed up successfully' });
+      
     } else if (role === 'Student') {
       console.log('Creating student record...');
       
       // Prepare student data
       const studentData = {
-        email,
-        username: name,
+        email: validatedEmail,
+        username: validatedName,
         password: hashedPassword,
         role,
-        admissionNo: admissionNo.toUpperCase(),
-        universityRollNo: universityRollNo,
+        admissionNo: validation.validatedData.admissionNo || admissionNo.toUpperCase(),
+        universityRollNo: validation.validatedData.universityRollNo || universityRollNo,
         semester,
         section,
+        isEmailVerified: false,
+        emailVerificationToken: verificationToken,
+        emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
       };
 
       // Add optional fields if provided
       if (dateOfBirth) studentData.dateOfBirth = new Date(dateOfBirth);
-      if (phoneNumber) studentData.phoneNumber = phoneNumber;
+      if (validation.validatedData.phone || phoneNumber) studentData.phoneNumber = validation.validatedData.phone || phoneNumber;
       if (department) studentData.department = department;
       if (course) studentData.course = course;
       if (batch) studentData.batch = batch;
       if (address) studentData.address = address;
       if (guardianInfo) studentData.guardianInfo = guardianInfo;
 
-      const newStudent = new Student(studentData);
-      await newStudent.save();
+      newUser = new Student(studentData);
+      await newUser.save();
       
       console.log('Student saved successfully');
-      
-      // Return success response with student summary
-      res.json({ 
-        msg: 'Student signed up successfully',
-        student: newStudent.getSummary()
-      });
     } else {
       console.log('Invalid role provided:', role);
-      res.status(400).json({ error: 'Invalid role selected' });
+      return res.status(400).json({ error: 'Invalid role selected' });
     }
+
+    // Create email verification record
+    const emailVerification = new EmailVerification({
+      email: validatedEmail,
+      verificationToken,
+      verificationCode,
+      userId: newUser._id,
+      userType: userType
+    });
+    await emailVerification.save();
+
+    // Send verification email
+    try {
+      await emailService.sendEmailVerification(
+        validatedEmail,
+        validatedName,
+        verificationToken,
+        verificationCode
+      );
+      console.log('Verification email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Don't fail the registration if email fails, but log it
+    }
+
+    // Send admin notification for faculty registration
+    if (role === 'Faculty') {
+      try {
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@college.com';
+        await emailService.sendAdminNewRegistrationAlert(
+          adminEmail,
+          'Faculty',
+          validatedName,
+          validatedEmail,
+          department
+        );
+        console.log('Admin notification sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send admin notification:', emailError);
+      }
+    }
+
+    // Return success response
+    if (role === 'Faculty') {
+      res.json({ 
+        msg: 'Faculty registration submitted successfully! Please check your email to verify your account. After email verification, your account will be pending approval from admin.',
+        status: 'pending',
+        emailSent: true,
+        nextSteps: [
+          'Check your email for verification link',
+          'Click the verification link or enter the code',
+          'Wait for admin approval',
+          'You will receive an email once approved'
+        ]
+      });
+    } else {
+      res.json({ 
+        msg: 'Student registration successful! Please check your email to verify your account before logging in.',
+        student: newUser.getSummary(),
+        emailSent: true,
+        nextSteps: [
+          'Check your email for verification link',
+          'Click the verification link or enter the code',
+          'Login with your credentials after verification'
+        ]
+      });
+    }
+    
   } catch (error) {
     console.error('Signup error details:', error);
     console.error('Error stack:', error.stack);

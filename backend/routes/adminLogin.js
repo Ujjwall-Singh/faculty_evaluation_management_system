@@ -36,18 +36,29 @@ router.post('/', async (req, res) => {
           name: STATIC_ADMIN.name,
           role: STATIC_ADMIN.role
         });
+      } else {
+        return res.status(401).json({ 
+          error: 'Wrong password',
+          message: 'Incorrect admin password. Please check your password and try again.'
+        });
       }
     }
 
     // Check database for other admins
     const admin = await Admin.findOne({ email });
     if (!admin) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ 
+        error: 'Email not found',
+        message: 'No admin account found with this email address. Please check your email.'
+      });
     }
 
     const match = await bcrypt.compare(password, admin.password);
     if (!match) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ 
+        error: 'Wrong password',
+        message: 'Incorrect password. Please check your password and try again.'
+      });
     }
 
     res.json({ 

@@ -43,8 +43,17 @@ const Studentlogin = () => {
       }
     } catch (err) {
       console.error('Login error:', err);
-      if (err.response?.status === 401) {
+      
+      // Display specific error message from backend
+      const errorMessage = err.response?.data?.message || err.response?.data?.error;
+      if (errorMessage) {
+        setError(errorMessage);
+      } else if (err.response?.status === 401) {
         setError('Invalid email or password');
+      } else if (err.response?.status === 403) {
+        setError('Access denied. Please verify your email or contact support.');
+      } else if (err.response?.status === 423) {
+        setError('Account temporarily locked. Please try again later.');
       } else if (err.response?.status === 500) {
         setError('Server error. Please try again later');
       } else {

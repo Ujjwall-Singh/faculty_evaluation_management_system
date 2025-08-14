@@ -79,6 +79,7 @@ const AdminDrawer = ({ isOpen, onClose, onMenuSelect, activeMenu }) => {
     const activeTabToMenuMapping = {
       'dashboard': ['dashboard', 'performance-analytics', 'faculty-reports', 'student-reports', 'department-stats', 'notifications', 'announcements', 'messaging', 'newsletters', 'academic-calendar'],
       'faculty': ['faculty-management', 'user-management', 'departments', 'courses', 'bulk-operations'],
+      'faculty-management': ['faculty-management'],
       'students': ['student-management', 'semesters'],
       'reviews': ['review-management', 'evaluation-criteria', 'rating-system', 'feedback-analysis', 'evaluation-system'],
       'profile': ['admin-profile'],
@@ -121,7 +122,7 @@ const AdminDrawer = ({ isOpen, onClose, onMenuSelect, activeMenu }) => {
         'department-stats': 'dashboard',
         
         // Faculty management
-        'faculty-management': 'faculty',
+        'faculty-management': 'faculty-management',
         'user-management': 'faculty',
         'faculty-analysis': 'faculty-analysis',
         

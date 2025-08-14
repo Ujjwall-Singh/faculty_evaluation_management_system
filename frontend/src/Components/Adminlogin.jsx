@@ -45,19 +45,20 @@ const Adminlogin = () => {
       }
     } catch (error) {
       console.error('Admin login error:', error);
-      let errorMessage = 'Login failed';
       
-      if (error.code === 'ERR_NETWORK') {
-        errorMessage = 'Cannot connect to server. Please check if backend is running.';
+      // Display specific error message from backend
+      const errorMessage = error.response?.data?.message || error.response?.data?.error;
+      if (errorMessage) {
+        setError(errorMessage);
+      } else if (error.code === 'ERR_NETWORK') {
+        setError('Cannot connect to server. Please check if backend is running.');
       } else if (error.response?.status === 401) {
-        errorMessage = 'Invalid email or password';
+        setError('Invalid admin credentials');
       } else if (error.response?.status === 500) {
-        errorMessage = 'Server error. Please try again later';
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
+        setError('Server error. Please try again later');
+      } else {
+        setError('Login failed. Please try again.');
       }
-      
-      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

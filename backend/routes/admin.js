@@ -4,6 +4,7 @@ const Review = require('../models/Review');
 const Faculty = require('../models/Faculty');
 const Student = require('../models/Student');
 const Admin = require('../models/Admin');
+const emailService = require('../utils/emailService');
 const bcrypt = require('bcrypt');
 
 // Get system statistics
@@ -819,6 +820,307 @@ router.get('/audit-logs', async (req, res) => {
       success: false,
       message: 'Failed to fetch audit logs',
       error: error.message
+    });
+  }
+});
+
+// ================ FACULTY APPROVAL SYSTEM ================
+
+// Get all pending faculty registrations
+router.get('/pending-faculty', async (req, res) => {
+  try {
+    const pendingFaculty = await Faculty.find({ status: 'pending' })
+      .select('-password')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: pendingFaculty.length,
+      faculty: pendingFaculty
+    });
+  } catch (error) {
+    console.error('Error fetching pending faculty:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch pending faculty',
+      details: error.message 
+    });
+  }
+});
+
+// Get all faculty with status filter
+router.get('/faculty-management', async (req, res) => {
+  try {
+    const { status = 'all', department = 'all', page = 1, limit = 10 } = req.query;
+    
+    let query = {};
+    if (status !== 'all') {
+      query.status = status;
+    }
+    if (department !== 'all') {
+      query.department = department;
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const faculty = await Faculty.find(query)
+      .select('-password')
+      .populate('approvedBy', 'username')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalCount = await Faculty.countDocuments(query);
+    const pendingCount = await Faculty.countDocuments({ status: 'pending' });
+    const approvedCount = await Faculty.countDocuments({ status: 'approved' });
+    const rejectedCount = await Faculty.countDocuments({ status: 'rejected' });
+
+    res.json({
+      success: true,
+      faculty: faculty,
+      pagination: {
+        current: parseInt(page),
+        total: Math.ceil(totalCount / parseInt(limit)),
+        count: totalCount
+      },
+      stats: {
+        total: totalCount,
+        pending: pendingCount,
+        approved: approvedCount,
+        rejected: rejectedCount
+      }
+    });
+  } catch (error) {
+    console.error('Error in faculty management:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch faculty data',
+      details: error.message 
+    });
+  }
+});
+
+// Approve faculty
+router.post('/approve-faculty/:facultyId', async (req, res) => {
+  try {
+    const { facultyId } = req.params;
+    const { adminId, adminEmail } = req.body;
+
+    // Find the faculty
+    const faculty = await Faculty.findById(facultyId);
+    if (!faculty) {
+      return res.status(404).json({ error: 'Faculty not found' });
+    }
+
+    if (faculty.status === 'approved') {
+      return res.status(400).json({ error: 'Faculty is already approved' });
+    }
+
+    // Find admin (for logging purposes)
+    let admin = null;
+    if (adminId) {
+      admin = await Admin.findById(adminId);
+    } else if (adminEmail) {
+      admin = await Admin.findOne({ email: adminEmail });
+    }
+
+    // Approve the faculty
+    await faculty.approve(admin ? admin._id : null);
+
+    // Send approval notification email
+    try {
+      await emailService.sendFacultyApprovalNotification(
+        faculty.email,
+        faculty.name,
+        'approved'
+      );
+      console.log('Approval notification sent to:', faculty.email);
+    } catch (emailError) {
+      console.error('Error sending approval notification:', emailError);
+      // Continue with approval even if email fails
+    }
+
+    res.json({
+      success: true,
+      message: `Faculty ${faculty.name} has been approved successfully`,
+      faculty: {
+        id: faculty._id,
+        name: faculty.name,
+        email: faculty.email,
+        department: faculty.department,
+        status: faculty.status,
+        approvedAt: faculty.approvedAt,
+        approvedBy: admin ? admin.username : 'Admin'
+      }
+    });
+  } catch (error) {
+    console.error('Error approving faculty:', error);
+    res.status(500).json({ 
+      error: 'Failed to approve faculty',
+      details: error.message 
+    });
+  }
+});
+
+// Reject faculty
+router.post('/reject-faculty/:facultyId', async (req, res) => {
+  try {
+    const { facultyId } = req.params;
+    const { reason, adminId, adminEmail } = req.body;
+
+    if (!reason || reason.trim() === '') {
+      return res.status(400).json({ error: 'Rejection reason is required' });
+    }
+
+    // Find the faculty
+    const faculty = await Faculty.findById(facultyId);
+    if (!faculty) {
+      return res.status(404).json({ error: 'Faculty not found' });
+    }
+
+    if (faculty.status === 'rejected') {
+      return res.status(400).json({ error: 'Faculty is already rejected' });
+    }
+
+    // Find admin (for logging purposes)
+    let admin = null;
+    if (adminId) {
+      admin = await Admin.findById(adminId);
+    } else if (adminEmail) {
+      admin = await Admin.findOne({ email: adminEmail });
+    }
+
+    // Reject the faculty
+    await faculty.reject(admin ? admin._id : null, reason.trim());
+
+    // Send rejection notification email
+    try {
+      await emailService.sendFacultyApprovalNotification(
+        faculty.email,
+        faculty.name,
+        'rejected',
+        reason.trim()
+      );
+      console.log('Rejection notification sent to:', faculty.email);
+    } catch (emailError) {
+      console.error('Error sending rejection notification:', emailError);
+      // Continue with rejection even if email fails
+    }
+
+    res.json({
+      success: true,
+      message: `Faculty ${faculty.name} has been rejected`,
+      faculty: {
+        id: faculty._id,
+        name: faculty.name,
+        email: faculty.email,
+        department: faculty.department,
+        status: faculty.status,
+        rejectionReason: faculty.rejectionReason,
+        rejectedBy: admin ? admin.username : 'Admin'
+      }
+    });
+  } catch (error) {
+    console.error('Error rejecting faculty:', error);
+    res.status(500).json({ 
+      error: 'Failed to reject faculty',
+      details: error.message 
+    });
+  }
+});
+
+// Get faculty details by ID
+router.get('/faculty/:facultyId', async (req, res) => {
+  try {
+    const { facultyId } = req.params;
+    
+    const faculty = await Faculty.findById(facultyId)
+      .select('-password')
+      .populate('approvedBy', 'username email');
+
+    if (!faculty) {
+      return res.status(404).json({ error: 'Faculty not found' });
+    }
+
+    res.json({
+      success: true,
+      faculty: faculty
+    });
+  } catch (error) {
+    console.error('Error fetching faculty details:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch faculty details',
+      details: error.message 
+    });
+  }
+});
+
+// Bulk approve/reject faculty
+router.post('/bulk-faculty-action', async (req, res) => {
+  try {
+    const { action, facultyIds, reason, adminId, adminEmail } = req.body;
+
+    if (!action || !facultyIds || !Array.isArray(facultyIds) || facultyIds.length === 0) {
+      return res.status(400).json({ error: 'Invalid request data' });
+    }
+
+    if (action === 'reject' && (!reason || reason.trim() === '')) {
+      return res.status(400).json({ error: 'Rejection reason is required for bulk reject' });
+    }
+
+    // Find admin
+    let admin = null;
+    if (adminId) {
+      admin = await Admin.findById(adminId);
+    } else if (adminEmail) {
+      admin = await Admin.findOne({ email: adminEmail });
+    }
+
+    const results = {
+      successful: [],
+      failed: []
+    };
+
+    for (const facultyId of facultyIds) {
+      try {
+        const faculty = await Faculty.findById(facultyId);
+        if (!faculty) {
+          results.failed.push({ id: facultyId, reason: 'Faculty not found' });
+          continue;
+        }
+
+        if (action === 'approve') {
+          if (faculty.status === 'approved') {
+            results.failed.push({ id: facultyId, reason: 'Already approved' });
+            continue;
+          }
+          await faculty.approve(admin ? admin._id : null);
+        } else if (action === 'reject') {
+          if (faculty.status === 'rejected') {
+            results.failed.push({ id: facultyId, reason: 'Already rejected' });
+            continue;
+          }
+          await faculty.reject(admin ? admin._id : null, reason.trim());
+        }
+
+        results.successful.push({
+          id: facultyId,
+          name: faculty.name,
+          email: faculty.email
+        });
+      } catch (error) {
+        results.failed.push({ id: facultyId, reason: error.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Bulk ${action} completed`,
+      results: results
+    });
+  } catch (error) {
+    console.error('Error in bulk faculty action:', error);
+    res.status(500).json({ 
+      error: 'Failed to perform bulk action',
+      details: error.message 
     });
   }
 });

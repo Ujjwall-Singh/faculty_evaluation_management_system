@@ -11,6 +11,7 @@ import Studentlogin from './Components/Studentlogin';
 import Facultylogin from './Components/Facultylogin';
 import Dashboard from './Components/Dashboard/Admin/Admindashboard';
 import Signup from './Components/Signup';
+import EmailVerification from './Components/EmailVerification';
 import Studentdash from './Components/Dashboard/Student/Studentdash';
 import TeacherReviewForm from './Components/Dashboard/Student/TeacherReviewForm';
 import ReviewChart from './Components/Dashboard/Faulty/chart';
@@ -104,6 +105,12 @@ function App() {
             <Route path="/signup" element={
               <PublicRoute>
                 <Signup />
+              </PublicRoute>
+            } />
+
+            <Route path="/verify-email" element={
+              <PublicRoute>
+                <EmailVerification />
               </PublicRoute>
             } />
 
