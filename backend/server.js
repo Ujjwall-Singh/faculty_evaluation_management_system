@@ -91,6 +91,23 @@ app.use(cors({
 
 app.use(morgan('dev')); // Log requests
 
+// Database connection middleware - ensure connection for each API request
+app.use('/api', async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('Connecting to database for request:', req.path);
+      await connectDB();
+    }
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(503).json({ 
+      error: 'Database connection failed', 
+      message: 'Service temporarily unavailable' 
+    });
+  }
+});
+
 // Enhanced preflight handling
 app.options('*', cors({
   origin: function (origin, callback) {
@@ -114,18 +131,18 @@ app.options('*', cors({
   optionsSuccessStatus: 200
 }));
 
-// MongoDB Connection
+// MongoDB Connection Management for Serverless
 let isConnected = false;
 
 const connectDB = async () => {
+  // Reuse existing connection if available and healthy
   if (isConnected && mongoose.connection.readyState === 1) {
-    console.log('MongoDB already connected');
+    console.log('Reusing existing MongoDB connection');
     return true;
   }
 
   const mongoUri = process.env.MONGO_URI;
   console.log('MONGO_URI exists:', !!mongoUri);
-  console.log('MONGO_URI length:', mongoUri ? mongoUri.length : 0);
   
   if (!mongoUri) {
     console.error('Error: MONGO_URI is not set in environment variables');
@@ -134,36 +151,58 @@ const connectDB = async () => {
   }
 
   try {
-    console.log('Attempting to connect to MongoDB...');
-    console.log('Connection string preview:', mongoUri.substring(0, 20) + '...');
+    console.log('Establishing new MongoDB connection...');
     
+    // Optimized connection options for M0 cluster and serverless
     const options = {
-      serverSelectionTimeoutMS: 15000, // Increased timeout for serverless
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 1,
+      serverSelectionTimeoutMS: 10000, // Reduced timeout
+      socketTimeoutMS: 30000, // Reduced socket timeout
+      maxPoolSize: 5, // Reduced for M0 cluster (max 500 connections total)
+      minPoolSize: 0, // Allow connections to be closed when not needed
+      maxIdleTimeMS: 30000, // Close connections after 30s of inactivity
+      bufferCommands: false, // Disable mongoose buffering
+      bufferMaxEntries: 0, // Disable mongoose buffering
       retryWrites: true,
-      w: 'majority'
+      w: 'majority',
+      connectTimeoutMS: 10000,
+      heartbeatFrequencyMS: 30000, // Reduced heartbeat frequency
     };
+    
+    // Close any existing connection first
+    if (mongoose.connection.readyState !== 0) {
+      console.log('Closing existing connection...');
+      await mongoose.connection.close();
+    }
     
     await mongoose.connect(mongoUri, options);
     isConnected = true;
     console.log('Connected to MongoDB successfully');
+    
+    // Handle connection events
+    mongoose.connection.on('connected', () => {
+      console.log('MongoDB connected');
+      isConnected = true;
+    });
+    
+    mongoose.connection.on('error', (err) => {
+      console.error('MongoDB connection error:', err);
+      isConnected = false;
+    });
+    
+    mongoose.connection.on('disconnected', () => {
+      console.log('MongoDB disconnected');
+      isConnected = false;
+    });
+    
     return true;
   } catch (err) {
     console.error('Failed to connect to MongoDB:', err.message);
-    console.error('Error details:', err);
     isConnected = false;
     return false;
   }
 };
 
-// Force connection on startup
-connectDB().then(success => {
-  console.log('Initial connection attempt:', success ? 'SUCCESS' : 'FAILED');
-}).catch(err => {
-  console.error('Initial connection error:', err.message);
-});
+// Connection will be established on-demand for each request
 
 // Health check endpoint
 app.get('/health', (req, res) => {

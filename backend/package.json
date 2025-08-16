@@ -5,7 +5,15 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node simpleTest.js",
+    "check-connections": "node connectionCleanup.js check",
+    "cleanup-connections": "node connectionCleanup.js close",
+    "monitor": "node connectionMonitor.js",
+    "monitor-continuous": "node connectionMonitor.js --continuous",
+    "kill-processes": "powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force\"",
+    "restart": "npm run kill-processes && npm run cleanup-connections && npm start",
+    "safe-start": "npm run cleanup-connections && npm start"
   },
   "keywords": [],
   "author": "",
