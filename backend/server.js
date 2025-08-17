@@ -160,8 +160,7 @@ const connectDB = async () => {
       maxPoolSize: 5, // Reduced for M0 cluster (max 500 connections total)
       minPoolSize: 0, // Allow connections to be closed when not needed
       maxIdleTimeMS: 30000, // Close connections after 30s of inactivity
-      bufferCommands: false, // Disable mongoose buffering
-      bufferMaxEntries: 0, // Disable mongoose buffering
+      bufferCommands: true, // Enable mongoose buffering for better reliability
       retryWrites: true,
       w: 'majority',
       connectTimeoutMS: 10000,

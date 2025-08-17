@@ -419,10 +419,8 @@ StudentSchema.pre('save', function(next) {
   next();
 });
 
-// Indexes for better query performance
-StudentSchema.index({ admissionNo: 1 });
-StudentSchema.index({ universityRollNo: 1 });
-StudentSchema.index({ email: 1 });
+// Indexes for better query performance (excluding fields that already have unique: true)
+// admissionNo, universityRollNo, and email already have unique indexes, so we don't duplicate them
 StudentSchema.index({ semester: 1, department: 1 });
 StudentSchema.index({ semester: 1, section: 1 });
 StudentSchema.index({ department: 1, section: 1 });
